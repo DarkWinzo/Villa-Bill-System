@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vila POS - Bill Print</title>
+    <link rel="stylesheet" href="styles/print.css">
+</head>
+<body>
+    <div class="bill-container">
+        <div class="bill-header">
+            <div class="logo-section">
+                <div class="logo">🏨</div>
+                <div class="company-info">
+                    <h1>VILA RESORT & SPA</h1>
+                    <p>Premium Accommodation Services</p>
+                    <div class="contact-info">
+                        <p>📍 123 Resort Avenue, Paradise Valley</p>
+                        <p>📞 +91 98765 43210 | ✉️ info@vilaresort.com</p>
+                        <p>🌐 www.vilaresort.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bill-divider"></div>
+
+        <div class="bill-info">
+            <div class="bill-details">
+                <h2>ACCOMMODATION BILL</h2>
+                <div class="bill-meta">
+                    <div class="bill-number">
+                        <strong>Bill No:</strong> <span id="billNumber"></span>
+                    </div>
+                    <div class="bill-date">
+                        <strong>Date:</strong> <span id="billDate"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="customer-info">
+            <h3>Customer Details</h3>
+            <div class="customer-grid">
+                <div class="customer-field">
+                    <strong>Name:</strong> <span id="customerName"></span>
+                </div>
+                <div class="customer-field">
+                    <strong>Phone:</strong> <span id="customerPhone"></span>
+                </div>
+                <div class="customer-field">
+                    <strong>Address:</strong> <span id="customerAddress"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="accommodation-details">
+            <h3>Accommodation Details</h3>
+            <table class="details-table">
+                <thead>
+                    <tr>
+                        <th>Room Number</th>
+                        <th>Room Type</th>
+                        <th>Check-in Date</th>
+                        <th>Check-out Date</th>
+                        <th>Days</th>
+                        <th>Rate/Day</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="roomNumber"></td>
+                        <td id="roomType"></td>
+                        <td id="checkInDate"></td>
+                        <td id="checkOutDate"></td>
+                        <td id="days"></td>
+                        <td id="ratePerDay"></td>
+                        <td id="totalAmount"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bill-summary">
+            <div class="summary-row">
+                <span class="summary-label">Subtotal:</span>
+                <span class="summary-value" id="subtotal"></span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Tax (GST 12%):</span>
+                <span class="summary-value" id="tax"></span>
+            </div>
+            <div class="summary-row total-row">
+                <span class="summary-label">Grand Total:</span>
+                <span class="summary-value" id="grandTotal"></span>
+            </div>
+        </div>
+
+        <div class="bill-footer">
+            <div class="payment-info">
+                <p><strong>Payment Status:</strong> Paid</p>
+                <p><strong>Payment Method:</strong> Cash</p>
+            </div>
+            
+            <div class="terms">
+                <h4>Terms & Conditions:</h4>
+                <ul>
+                    <li>Check-in time: 2:00 PM | Check-out time: 12:00 PM</li>
+                    <li>Late check-out charges may apply</li>
+                    <li>Damage charges will be applicable for any property damage</li>
+                    <li>Management reserves the right to refuse service</li>
+                </ul>
+            </div>
+
+            <div class="signature-section">
+                <div class="signature">
+                    <div class="signature-line"></div>
+                    <p>Authorized Signature</p>
+                </div>
+                <div class="thank-you">
+                    <h3>Thank You for Choosing Vila Resort!</h3>
+                    <p>We hope you had a wonderful stay. Please visit us again!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/print.js"></script>
+</body>
+</html>
