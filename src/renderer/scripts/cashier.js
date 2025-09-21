@@ -109,7 +109,7 @@ function updateStats() {
     );
 
     document.getElementById('todayBills').textContent = todayBills.length;
-    document.getElementById('todayRevenue').textContent = `Rs. ${todayRevenue.toFixed(2)}`;
+    document.getElementById('todayRevenue').textContent = `Rs. ${todayRevenue.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function renderRecentBills() {
@@ -125,7 +125,7 @@ function renderRecentBills() {
             <td>${bill.bill_number}</td>
             <td>${bill.customer_name}</td>
             <td>${bill.room_number}</td>
-            <td>₹${bill.total_amount}</td>
+            <td>Rs. ${parseFloat(bill.total_amount).toLocaleString('en-LK', { minimumFractionDigits: 2 })}</td>
             <td>
                 <button class="print-btn" onclick="printBill(${bill.id})">Print</button>
             </td>
@@ -150,7 +150,7 @@ function renderAvailableRooms() {
         roomCard.innerHTML = `
             <div class="room-number">${room.room_number}</div>
             <div class="room-type">${room.room_type === 'ac' ? 'AC Room' : 'Non-AC Room'}</div>
-            <div class="room-price">₹${room.price_per_day}/day</div>
+            <div class="room-price">Rs. ${parseFloat(room.price_per_day).toLocaleString('en-LK')}/day</div>
         `;
         
         roomCard.addEventListener('click', () => {
@@ -209,7 +209,7 @@ async function loadRoomsForBilling() {
     rooms.forEach(room => {
         const option = document.createElement('option');
         option.value = room.id;
-        option.textContent = `${room.room_number} - ${room.room_type === 'ac' ? 'AC' : 'Non-AC'} (₹${room.price_per_day}/day)`;
+        option.textContent = `${room.room_number} - ${room.room_type === 'ac' ? 'AC' : 'Non-AC'} (Rs. ${parseFloat(room.price_per_day).toLocaleString('en-LK')}/day)`;
         option.dataset.price = room.price_per_day;
         select.appendChild(option);
     });

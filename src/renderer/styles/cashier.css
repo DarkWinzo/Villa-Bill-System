@@ -169,13 +169,6 @@ body {
 }
 
 /* Update currency symbols to Sri Lankan Rupees */
-.stat-value::before {
-    content: 'Rs. ';
-}
-
-.data-table td:nth-child(4)::before {
-    content: 'Rs. ';
-}
 
 .stat-label {
     color: #666;

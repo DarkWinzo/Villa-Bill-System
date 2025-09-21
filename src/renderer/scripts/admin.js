@@ -123,7 +123,7 @@ function renderRoomsTable() {
         row.innerHTML = `
             <td>${room.room_number}</td>
             <td>${room.room_type === 'ac' ? 'AC Room' : 'Non-AC Room'}</td>
-            <td>₹${room.price_per_day}</td>
+            <td>Rs. ${parseFloat(room.price_per_day).toLocaleString('en-LK', { minimumFractionDigits: 2 })}</td>
             <td>${room.description || '-'}</td>
             <td>
                 <button class="edit-btn" onclick="editRoom(${room.id})">Edit</button>
@@ -157,7 +157,7 @@ function renderBillsTable() {
             <td>${formatDate(bill.check_in_date)}</td>
             <td>${formatDate(bill.check_out_date)}</td>
             <td>${bill.days}</td>
-            <td>₹${bill.total_amount}</td>
+            <td>Rs. ${parseFloat(bill.total_amount).toLocaleString('en-LK', { minimumFractionDigits: 2 })}</td>
             <td>
                 <button class="print-btn" onclick="printBill(${bill.id})">Print</button>
             </td>
@@ -171,7 +171,7 @@ function updateDashboardStats() {
     document.getElementById('totalBills').textContent = bills.length;
     
     const totalRevenue = bills.reduce((sum, bill) => sum + parseFloat(bill.total_amount), 0);
-    document.getElementById('totalRevenue').textContent = `Rs. ${totalRevenue.toFixed(2)}`;
+    document.getElementById('totalRevenue').textContent = `Rs. ${totalRevenue.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 async function handleRoomSubmit(e) {
@@ -237,7 +237,7 @@ async function loadRoomsForBilling() {
     rooms.forEach(room => {
         const option = document.createElement('option');
         option.value = room.id;
-        option.textContent = `${room.room_number} - ${room.room_type === 'ac' ? 'AC' : 'Non-AC'} (₹${room.price_per_day}/day)`;
+        option.textContent = `${room.room_number} - ${room.room_type === 'ac' ? 'AC' : 'Non-AC'} (Rs. ${parseFloat(room.price_per_day).toLocaleString('en-LK')}/day)`;
         option.dataset.price = room.price_per_day;
         select.appendChild(option);
     });

@@ -9,7 +9,7 @@ class BillingService {
     try {
       const today = moment().format('YYYYMMDD');
       const lastBill = await this.db.get(
-        'SELECT bill_number FROM bills WHERE bill_number LIKE ? ORDER BY id DESC LIMIT 1',
+        'SELECT bill_number FROM bills WHERE bill_number LIKE ? ORDER BY created_at DESC LIMIT 1',
         [`VB${today}%`]
       );
 

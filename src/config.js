@@ -11,7 +11,7 @@ module.exports = {
     name: 'Vila POS System',
     version: '1.0.0',
     currency: 'LKR',
-    currencySymbol: 'Rs.'
+    currencySymbol: 'Rs. '
   },
   
   // Database Settings
@@ -22,9 +22,11 @@ module.exports = {
   
   // UI Theme
   theme: {
-    primary: '#8B5CF6',
-    secondary: '#A855F7',
+    primary: '#7C3AED',
+    secondary: '#8B5CF6',
     dark: '#1E1B4B',
-    accent: '#C084FC'
+    darker: '#0F0D2A',
+    accent: '#A855F7',
+    glass: 'rgba(124, 58, 237, 0.1)'
   }
 };

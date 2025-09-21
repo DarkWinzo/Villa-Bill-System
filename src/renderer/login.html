@@ -9,137 +9,148 @@
 </head>
 <body>
     <div class="login-background">
-        <div class="animated-bg">
-            <div class="floating-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
-                <div class="shape shape-4"></div>
-                <div class="shape shape-5"></div>
-                <div class="shape shape-6"></div>
+        <!-- Animated Background Elements -->
+        <div class="bg-animation">
+            <div class="floating-orbs">
+                <div class="orb orb-1"></div>
+                <div class="orb orb-2"></div>
+                <div class="orb orb-3"></div>
+                <div class="orb orb-4"></div>
+                <div class="orb orb-5"></div>
             </div>
+            <div class="grid-pattern"></div>
+            <div class="gradient-overlay"></div>
         </div>
         
         <div class="login-container">
             <div class="login-card">
                 <div class="card-glow"></div>
+                <div class="card-shine"></div>
                 
+                <!-- Logo Section -->
                 <div class="logo-section">
                     <div class="logo-container">
                         <div class="logo-icon">
                             <i class="fas fa-hotel"></i>
-                            <div class="icon-glow"></div>
+                            <div class="icon-particles">
+                                <div class="particle"></div>
+                                <div class="particle"></div>
+                                <div class="particle"></div>
+                                <div class="particle"></div>
+                            </div>
                         </div>
                         <div class="logo-text">
                             <h1>Vila POS</h1>
                             <p>Premium Billing System</p>
-                            <div class="logo-particles">
-                                <div class="particle"></div>
-                                <div class="particle"></div>
-                                <div class="particle"></div>
-                            </div>
+                            <div class="logo-underline"></div>
                         </div>
-                    </div>
-                    <div class="logo-decoration">
-                        <div class="decoration-line"></div>
-                        <div class="decoration-dot"></div>
-                        <div class="decoration-line"></div>
                     </div>
                 </div>
                 
-                <form id="loginForm" class="login-form">
+                <!-- Login Form -->
+                <div class="form-section">
                     <div class="form-header">
                         <h2>Welcome Back</h2>
                         <p>Sign in to access your dashboard</p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="input-container">
-                            <i class="fas fa-user input-icon"></i>
-                            <input type="text" id="username" name="username" required autocomplete="username" placeholder=" ">
-                            <label for="username" class="floating-label">Username</label>
-                            <div class="input-border"></div>
-                            <div class="input-glow"></div>
+                        <div class="smart-login-indicator">
+                            <i class="fas fa-brain"></i>
+                            <span>Smart Role Detection</span>
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <div class="input-container">
-                            <i class="fas fa-lock input-icon"></i>
-                            <input type="password" id="password" name="password" required autocomplete="current-password" placeholder=" ">
-                            <label for="password" class="floating-label">Password</label>
-                            <div class="input-border"></div>
-                            <div class="input-glow"></div>
-                            <button type="button" class="password-toggle" id="passwordToggle">
-                                <i class="fas fa-eye"></i>
+                    <form id="loginForm" class="login-form">
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <div class="input-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <input type="text" id="username" name="username" required placeholder=" ">
+                                <label for="username" class="floating-label">Username</label>
+                                <div class="input-border"></div>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <div class="input-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <input type="password" id="password" name="password" required placeholder=" ">
+                                <label for="password" class="floating-label">Password</label>
+                                <div class="input-border"></div>
+                                <div class="input-glow"></div>
+                                <button type="button" class="password-toggle" id="passwordToggle">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="login-btn">
+                            <div class="btn-bg"></div>
+                            <div class="btn-content">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Sign In</span>
+                            </div>
+                            <div class="btn-loading">
+                                <div class="loading-spinner"></div>
+                                <span>Authenticating...</span>
+                            </div>
+                            <div class="btn-ripple"></div>
+                        </button>
+                        
+                        <div id="errorMessage" class="error-message">
+                            <div class="error-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <span class="error-text"></span>
+                            <button type="button" class="error-close">
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
-                    </div>
-                    
-                    <button type="submit" class="login-btn">
-                        <div class="btn-bg"></div>
-                        <span class="btn-content">
-                            <i class="fas fa-sign-in-alt btn-icon"></i>
-                            <span class="btn-text">Sign In</span>
-                        </span>
-                        <div class="btn-loading">
-                            <div class="loading-spinner"></div>
-                            <span>Authenticating...</span>
-                        </div>
-                        <div class="btn-particles">
-                            <div class="particle"></div>
-                            <div class="particle"></div>
-                            <div class="particle"></div>
-                            <div class="particle"></div>
-                        </div>
-                    </button>
-                    
-                    <div id="errorMessage" class="error-message">
-                        <div class="error-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <span class="error-text"></span>
-                        <button type="button" class="error-close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
                 
+                <!-- Footer Info -->
                 <div class="login-footer">
-                    <div class="credentials-info">
-                        <div class="info-card">
-                            <div class="info-header">
-                                <i class="fas fa-crown"></i>
-                                <span>Default Admin Access</span>
-                            </div>
-                            <div class="info-content">
-                                <div class="credential-item">
-                                    <i class="fas fa-user"></i>
-                                    <span><strong>Username:</strong> Admin</span>
+                    <div class="credentials-card">
+                        <div class="card-header">
+                            <i class="fas fa-crown"></i>
+                            <span>Default Admin Access</span>
+                        </div>
+                        <div class="credentials-grid">
+                            <div class="credential-item">
+                                <i class="fas fa-user-shield"></i>
+                                <div class="credential-info">
+                                    <span class="label">Username</span>
+                                    <span class="value">Admin</span>
                                 </div>
-                                <div class="credential-item">
-                                    <i class="fas fa-key"></i>
-                                    <span><strong>Password:</strong> Admin@123</span>
+                            </div>
+                            <div class="credential-item">
+                                <i class="fas fa-key"></i>
+                                <div class="credential-info">
+                                    <span class="label">Password</span>
+                                    <span class="value">Admin@123</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="info-note">
+                        <div class="smart-note">
                             <i class="fas fa-magic"></i>
-                            <span>Smart role detection - No need to select role</span>
+                            <span>Automatic role detection - Admin & Cashier access</span>
                         </div>
+                    </div>
+                    
+                    <div class="currency-info">
+                        <i class="fas fa-coins"></i>
+                        <span>Currency: Sri Lankan Rupees (Rs.)</span>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Background Effects -->
-        <div class="bg-effects">
-            <div class="grid-overlay"></div>
-            <div class="gradient-orbs">
-                <div class="orb orb-1"></div>
-                <div class="orb orb-2"></div>
-                <div class="orb orb-3"></div>
-            </div>
+        <!-- Particle System -->
+        <div class="particle-system">
+            <div class="particle-container"></div>
         </div>
     </div>
 
