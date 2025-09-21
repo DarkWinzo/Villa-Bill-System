@@ -98,9 +98,9 @@ function createMenu() {
 }
 
 // IPC Handlers
-ipcMain.handle('auth:login', async (event, credentials) => {
+ipcMain.handle('auth:login', async (event, { username, password }) => {
   try {
-    const user = await authService.login(credentials.username, credentials.password);
+    const user = await authService.login(username, password);
     if (user) {
       currentUser = user;
       return { success: true, user: { id: user.id, username: user.username, role: user.role } };

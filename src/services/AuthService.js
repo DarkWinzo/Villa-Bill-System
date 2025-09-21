@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const config = require('../config');
 
 class AuthService {
   constructor(dbService) {
@@ -13,19 +14,19 @@ class AuthService {
       );
 
       if (!existingAdmin) {
-        const hashedPassword = await bcrypt.hash('admin123', 10);
+        const hashedPassword = await bcrypt.hash(config.admin.password, 10);
         await this.db.run(
           'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
-          ['admin', hashedPassword, 'admin']
+          [config.admin.username, hashedPassword, 'admin']
         );
-        console.log('Default admin user created: admin/admin123');
+        console.log(`Default admin user created: ${config.admin.username}/${config.admin.password}`);
       }
     } catch (error) {
       console.error('Error creating default admin:', error);
     }
   }
 
-  async login(username, password) {
+  async login(username, password, requestedRole = null) {
     try {
       const user = await this.db.get(
         'SELECT * FROM users WHERE username = ?',
@@ -41,6 +42,10 @@ class AuthService {
         throw new Error('Invalid password');
       }
 
+      // If a specific role was requested, verify the user has that role
+      if (requestedRole && user.role !== requestedRole) {
+        throw new Error('Access denied for this role');
+      }
       return {
         id: user.id,
         username: user.username,
