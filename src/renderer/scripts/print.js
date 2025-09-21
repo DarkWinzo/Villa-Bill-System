@@ -28,17 +28,17 @@ function populateBillData() {
     document.getElementById('checkInDate').textContent = formatDate(billData.check_in_date);
     document.getElementById('checkOutDate').textContent = formatDate(billData.check_out_date);
     document.getElementById('days').textContent = billData.days;
-    document.getElementById('ratePerDay').textContent = `₹${billData.price_per_day}`;
-    document.getElementById('totalAmount').textContent = `₹${billData.total_amount}`;
+    document.getElementById('ratePerDay').textContent = billData.price_per_day;
+    document.getElementById('totalAmount').textContent = billData.total_amount;
 
     // Bill summary
     const subtotal = parseFloat(billData.total_amount);
     const tax = subtotal * 0.12; // 12% GST
     const grandTotal = subtotal + tax;
 
-    document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
-    document.getElementById('tax').textContent = `₹${tax.toFixed(2)}`;
-    document.getElementById('grandTotal').textContent = `₹${grandTotal.toFixed(2)}`;
+    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('tax').textContent = tax.toFixed(2);
+    document.getElementById('grandTotal').textContent = grandTotal.toFixed(2);
 }
 
 function formatDate(dateString) {

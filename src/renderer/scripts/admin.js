@@ -171,7 +171,7 @@ function updateDashboardStats() {
     document.getElementById('totalBills').textContent = bills.length;
     
     const totalRevenue = bills.reduce((sum, bill) => sum + parseFloat(bill.total_amount), 0);
-    document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toFixed(2)}`;
+    document.getElementById('totalRevenue').textContent = `Rs. ${totalRevenue.toFixed(2)}`;
 }
 
 async function handleRoomSubmit(e) {

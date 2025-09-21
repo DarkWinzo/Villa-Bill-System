@@ -26,7 +26,7 @@ class AuthService {
     }
   }
 
-  async login(username, password, requestedRole = null) {
+  async login(username, password) {
     try {
       const user = await this.db.get(
         'SELECT * FROM users WHERE username = ?',
@@ -42,10 +42,6 @@ class AuthService {
         throw new Error('Invalid password');
       }
 
-      // If a specific role was requested, verify the user has that role
-      if (requestedRole && user.role !== requestedRole) {
-        throw new Error('Access denied for this role');
-      }
       return {
         id: user.id,
         username: user.username,

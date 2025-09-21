@@ -109,7 +109,7 @@ function updateStats() {
     );
 
     document.getElementById('todayBills').textContent = todayBills.length;
-    document.getElementById('todayRevenue').textContent = `₹${todayRevenue.toFixed(2)}`;
+    document.getElementById('todayRevenue').textContent = `Rs. ${todayRevenue.toFixed(2)}`;
 }
 
 function renderRecentBills() {
