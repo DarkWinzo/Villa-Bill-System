@@ -1,38 +1,38 @@
-@@ .. @@
- {
--  "name": "home-project",
-+  "name": "vila-pos-system",
-   "version": "1.0.0",
--  "description": "",
--  "main": "index.js",
-+  "description": "Vila POS Billing System",
-+  "main": "src/main.js",
-   "scripts": {
--    "test": "echo \"Error: no test specified\" && exit 1"
-+    "start": "electron .",
-+    "dev": "electron . --dev",
-+    "build": "electron-builder",
-+    "build-win": "electron-builder --win"
-   },
--  "keywords": [],
--  "author": "",
-+  "keywords": ["pos", "billing", "vila", "electron"],
-+  "author": "Vila POS Team",
-   "license": "ISC",
-+  "build": {
-+    "appId": "com.vila.pos",
-+    "productName": "Vila POS System",
-+    "directories": {
-+      "output": "dist"
-+    },
-+    "files": [
-+      "src/**/*",
-+      "assets/**/*",
-+      "node_modules/**/*"
-+    ],
-+    "win": {
-+      "target": "nsis",
-+      "icon": "assets/icon.ico"
-+    }
-+  },
-   "devDependencies": {
+{
+  "name": "vila-pos-system",
+  "version": "1.0.0",
+  "description": "Vila POS Billing System",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win"
+  },
+  "keywords": ["pos", "billing", "vila", "electron"],
+  "author": "Vila POS Team",
+  "license": "ISC",
+  "build": {
+    "appId": "com.vila.pos",
+    "productName": "Vila POS System",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^latest",
+    "electron-builder": "^latest"
+  },
+  "dependencies": {
+    "sqlite3": "^latest"
+  }
+}
