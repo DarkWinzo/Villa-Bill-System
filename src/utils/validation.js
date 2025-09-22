@@ -20,9 +20,11 @@ export const cashierSchema = yup.object({
     .max(50, 'Username must be less than 50 characters'),
   password: yup
     .string()
-    .required('Password is required')
-    .min(6, 'Password must be at least 6 characters')
-    .max(100, 'Password must be less than 100 characters'),
+    .when('$isEditing', {
+      is: true,
+      then: (schema) => schema.min(6, 'Password must be at least 6 characters').max(100, 'Password must be less than 100 characters'),
+      otherwise: (schema) => schema.required('Password is required').min(6, 'Password must be at least 6 characters').max(100, 'Password must be less than 100 characters')
+    }),
   full_name: yup
     .string()
     .required('Full name is required')

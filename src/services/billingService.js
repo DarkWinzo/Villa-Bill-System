@@ -33,6 +33,7 @@ class BillingService {
     return new Promise((resolve) => {
       setTimeout(() => {
         const bills = this.getStoredBills()
+        const rooms = JSON.parse(localStorage.getItem('vila-pos-rooms-data') || '[]')
         const newId = Math.max(...bills.map(b => b.id), 0) + 1
         
         // Calculate days and total
@@ -40,6 +41,9 @@ class BillingService {
         const checkOut = new Date(billData.check_out_date)
         const days = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24))
         const totalAmount = days * billData.price_per_day
+        
+        // Get room details
+        const room = rooms.find(r => r.id === billData.room_id)
 
         const newBill = {
           ...billData,
@@ -47,6 +51,8 @@ class BillingService {
           bill_number: billData.bill_number || this.generateBillNumber(),
           days,
           total_amount: totalAmount,
+          room_number: room?.room_number || 'N/A',
+          room_type: room?.room_type || 'N/A',
           created_at: new Date().toISOString()
         }
 

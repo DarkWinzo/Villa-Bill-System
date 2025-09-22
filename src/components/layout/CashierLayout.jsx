@@ -47,7 +47,7 @@ export const CashierLayout = ({ children }) => {
         animate={{ x: sidebarOpen ? 0 : '-100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50',
+          'fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto',
           'lg:translate-x-0 lg:static lg:inset-0'
         )}
       >
@@ -116,17 +116,17 @@ export const CashierLayout = ({ children }) => {
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-slate-400 hover:text-white lg:hidden"
+              className="p-2 text-slate-400 hover:text-white hover:bg-dark-800 rounded-lg transition-colors lg:hidden"
             >
               <Menu className="w-6 h-6" />
             </button>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-white">
+                <p className="text-xs sm:text-sm font-medium text-white">
                   Welcome, {user?.username}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-400 hidden sm:block">
                   {new Date().toLocaleDateString('en-LK', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -140,7 +140,7 @@ export const CashierLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="p-4 lg:p-8">
+        <main className="p-4 sm:p-6 lg:p-8 min-h-0 flex-1 overflow-y-auto">
           {children}
         </main>
       </div>
