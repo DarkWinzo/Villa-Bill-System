@@ -1,9 +1,5 @@
-import { app, BrowserWindow, Menu, ipcMain } from 'electron'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const path = require('path')
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
 
@@ -20,20 +16,20 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
-      preload: join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js')
     },
     show: false,
     titleBarStyle: 'default',
     webSecurity: true,
-    autoHideMenuBar: false
+    autoHideMenuBar: false,
+    icon: path.join(__dirname, '../build/icon.ico')
   })
 
   // Load the app
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')
-    // mainWindow.webContents.openDevTools()
   } else {
-    mainWindow.loadFile(join(__dirname, '../dist/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }
 
   mainWindow.once('ready-to-show', () => {

@@ -2,7 +2,6 @@
   "name": "vila-pos-system",
   "version": "1.0.0",
   "description": "Vila POS Billing System",
-  "type": "module",
   "main": "public/electron.js",
   "scripts": {
     "dev": "vite",
