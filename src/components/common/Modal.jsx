@@ -73,23 +73,23 @@ export const Modal = ({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', duration: 0.3 }}
             className={cn(
-              'relative w-full bg-dark-900/95 backdrop-blur-xl border border-dark-700/50 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto',
+              'relative w-full glass-card rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto',
               sizeClasses[size],
               className
             )}
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-6 border-b border-dark-700/50 flex-shrink-0 lg:p-4">
+              <div className="flex items-center justify-between p-6 border-b border-white/20 flex-shrink-0 lg:p-4 bg-gradient-to-r from-purple-600/10 to-blue-600/10">
                 {title && (
-                  <h2 className="text-xl font-semibold text-white lg:text-lg">
+                  <h2 className="text-xl font-bold gradient-text lg:text-lg">
                     {title}
                   </h2>
                 )}
                 {showCloseButton && (
                   <button
                     onClick={onClose}
-                    className="p-2 text-slate-400 hover:text-white hover:bg-dark-800 rounded-lg transition-colors"
+                    className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 hover:scale-110"
                   >
                     <X className="w-5 h-5" />
                   </button>

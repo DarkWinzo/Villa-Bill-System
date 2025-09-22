@@ -30,64 +30,375 @@ export const CashierBills = () => {
       <html>
         <head>
           <title>Bill ${bill.bill_number}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
           <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            .header { text-align: center; margin-bottom: 30px; }
-            .bill-details { margin-bottom: 20px; }
-            .customer-info { margin-bottom: 20px; }
-            .booking-details { margin-bottom: 20px; }
-            .total { font-size: 18px; font-weight: bold; text-align: right; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            
+            body {
+              background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%) !important;
+              color: #1e293b !important;
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+              margin: 0 !important;
+              padding: 20px !important;
+              line-height: 1.6;
+            }
+            
+            .print-container {
+              max-width: 800px;
+              margin: 0 auto;
+              background: white;
+              border-radius: 20px;
+              overflow: hidden;
+              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            }
+            
+            .print-header {
+              background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+              color: white !important;
+              padding: 40px 30px !important;
+              text-align: center !important;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .print-header::before {
+              content: '';
+              position: absolute;
+              top: -50%;
+              left: -50%;
+              width: 200%;
+              height: 200%;
+              background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+              animation: shimmer 3s ease-in-out infinite;
+            }
+            
+            @keyframes shimmer {
+              0%, 100% { transform: rotate(0deg); }
+              50% { transform: rotate(180deg); }
+            }
+            
+            .print-logo {
+              width: 80px !important;
+              height: 80px !important;
+              background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
+              border-radius: 20px !important;
+              display: inline-flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              margin-bottom: 20px !important;
+              box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .print-logo i {
+              font-size: 32px;
+              color: white;
+            }
+            
+            .print-title {
+              font-size: 36px !important;
+              font-weight: 800 !important;
+              margin: 0 0 10px 0 !important;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .print-subtitle {
+              font-size: 20px !important;
+              font-weight: 600 !important;
+              opacity: 0.9 !important;
+              margin: 0 0 10px 0 !important;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .bill-number {
+              font-size: 16px !important;
+              background: rgba(255, 255, 255, 0.2);
+              padding: 8px 16px;
+              border-radius: 20px;
+              display: inline-block;
+              margin-top: 10px;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .print-content {
+              padding: 40px 30px !important;
+            }
+            
+            .print-section {
+              margin-bottom: 30px !important;
+              padding: 25px !important;
+              background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+              border-radius: 15px !important;
+              border-left: 5px solid #3b82f6 !important;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .print-section::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 100px;
+              height: 100px;
+              background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+              border-radius: 50%;
+              transform: translate(30px, -30px);
+            }
+            
+            .print-section h3 {
+              color: #1e40af !important;
+              font-size: 22px !important;
+              font-weight: 700 !important;
+              margin: 0 0 20px 0 !important;
+              display: flex !important;
+              align-items: center !important;
+              gap: 12px !important;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .print-section h3 i {
+              font-size: 20px;
+              color: #3b82f6;
+            }
+            
+            .info-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 15px;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .info-item {
+              display: flex;
+              flex-direction: column;
+              gap: 5px;
+            }
+            
+            .info-label {
+              font-size: 14px;
+              font-weight: 600;
+              color: #64748b;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .info-value {
+              font-size: 16px;
+              font-weight: 700;
+              color: #1e293b;
+            }
+            
+            .print-table {
+              width: 100% !important;
+              border-collapse: collapse !important;
+              margin: 25px 0 !important;
+              background: white !important;
+              border-radius: 15px !important;
+              overflow: hidden !important;
+              box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            .print-table th {
+              background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+              color: white !important;
+              padding: 18px 15px !important;
+              text-align: left !important;
+              font-weight: 700 !important;
+              font-size: 15px !important;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .print-table td {
+              padding: 15px !important;
+              border-bottom: 1px solid #e2e8f0 !important;
+              font-size: 15px !important;
+              color: #334155 !important;
+              font-weight: 500;
+            }
+            
+            .print-table tr:nth-child(even) td {
+              background: #f8fafc !important;
+            }
+            
+            .print-table tr:hover td {
+              background: #e0f2fe !important;
+            }
+            
+            .print-total {
+              background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
+              color: white !important;
+              padding: 30px !important;
+              border-radius: 20px !important;
+              text-align: center !important;
+              margin: 30px 0 !important;
+              box-shadow: 0 12px 30px rgba(30, 64, 175, 0.4) !important;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .print-total::before {
+              content: '';
+              position: absolute;
+              top: -50%;
+              left: -50%;
+              width: 200%;
+              height: 200%;
+              background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+              animation: pulse 2s ease-in-out infinite;
+            }
+            
+            @keyframes pulse {
+              0%, 100% { opacity: 0.5; }
+              50% { opacity: 1; }
+            }
+            
+            .total-label {
+              font-size: 18px !important;
+              font-weight: 600 !important;
+              margin-bottom: 10px !important;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .total-amount {
+              font-size: 36px !important;
+              font-weight: 900 !important;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+              position: relative;
+              z-index: 2;
+            }
+            
+            .print-footer {
+              text-align: center !important;
+              margin-top: 40px !important;
+              padding: 25px !important;
+              background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+              border-radius: 15px !important;
+              border: 2px dashed #3b82f6 !important;
+              position: relative;
+            }
+            
+            .print-footer::before {
+              content: '✨';
+              position: absolute;
+              top: 10px;
+              left: 20px;
+              font-size: 20px;
+            }
+            
+            .print-footer::after {
+              content: '✨';
+              position: absolute;
+              top: 10px;
+              right: 20px;
+              font-size: 20px;
+            }
+            
+            .print-footer p {
+              color: #1e40af !important;
+              font-weight: 700 !important;
+              font-size: 18px !important;
+              margin: 0 !important;
+            }
+            
+            .print-date {
+              position: absolute;
+              top: 20px;
+              right: 30px;
+              background: rgba(255, 255, 255, 0.2);
+              padding: 8px 12px;
+              border-radius: 10px;
+              font-size: 14px;
+              font-weight: 600;
+              z-index: 2;
+            }
+            
+            @media print {
+              body { margin: 0 !important; padding: 10px !important; }
+              .print-container { box-shadow: none !important; }
+            }
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>Vila POS System</h1>
-            <h2>Accommodation Bill</h2>
-          </div>
-          
-          <div class="bill-details">
-            <p><strong>Bill Number:</strong> ${bill.bill_number}</p>
-            <p><strong>Date:</strong> ${formatDisplayDate(bill.created_at)}</p>
-          </div>
-          
-          <div class="customer-info">
-            <h3>Customer Information</h3>
-            <p><strong>Name:</strong> ${bill.customer_name}</p>
-            <p><strong>Phone:</strong> ${bill.customer_phone || 'N/A'}</p>
-            <p><strong>Address:</strong> ${bill.customer_address || 'N/A'}</p>
-          </div>
-          
-          <div class="booking-details">
-            <h3>Booking Details</h3>
-            <table>
-              <tr>
-                <th>Room Number</th>
-                <th>Check-in</th>
-                <th>Check-out</th>
-                <th>Days</th>
-                <th>Rate/Day</th>
-                <th>Total</th>
-              </tr>
-              <tr>
-                <td>${bill.room_number || 'N/A'}</td>
-                <td>${formatDisplayDate(bill.check_in_date)}</td>
-                <td>${formatDisplayDate(bill.check_out_date)}</td>
-                <td>${bill.days}</td>
-                <td>${formatCurrency(bill.price_per_day)}</td>
-                <td>${formatCurrency(bill.total_amount)}</td>
-              </tr>
-            </table>
-          </div>
-          
-          <div class="total">
-            <p>Total Amount: ${formatCurrency(bill.total_amount)}</p>
-          </div>
-          
-          <div style="margin-top: 40px; text-align: center;">
-            <p>Thank you for choosing Vila POS!</p>
+          <div class="print-container">
+            <div class="print-header">
+              <div class="print-date">${formatDisplayDate(new Date())}</div>
+              <div class="print-logo">
+                <i class="fas fa-hotel"></i>
+              </div>
+              <h1 class="print-title">Vila POS System</h1>
+              <h2 class="print-subtitle">Premium Hotel Management</h2>
+              <div class="bill-number">Bill #${bill.bill_number}</div>
+            </div>
+            
+            <div class="print-content">
+              <div class="print-section">
+                <h3><i class="fas fa-user"></i> Customer Information</h3>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">Customer Name</span>
+                    <span class="info-value">${bill.customer_name}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Phone Number</span>
+                    <span class="info-value">${bill.customer_phone || 'Not provided'}</span>
+                  </div>
+                  <div class="info-item" style="grid-column: 1 / -1;">
+                    <span class="info-label">Address</span>
+                    <span class="info-value">${bill.customer_address || 'Not provided'}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="print-section">
+                <h3><i class="fas fa-bed"></i> Booking Details</h3>
+                <table class="print-table">
+                  <thead>
+                    <tr>
+                      <th><i class="fas fa-door-open"></i> Room</th>
+                      <th><i class="fas fa-calendar-check"></i> Check-in</th>
+                      <th><i class="fas fa-calendar-times"></i> Check-out</th>
+                      <th><i class="fas fa-clock"></i> Days</th>
+                      <th><i class="fas fa-tag"></i> Rate/Day</th>
+                      <th><i class="fas fa-calculator"></i> Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>${bill.room_number || 'N/A'}</strong><br><small>${bill.room_type === 'ac' ? 'AC Room' : 'Non-AC Room'}</small></td>
+                      <td>${formatDisplayDate(bill.check_in_date)}</td>
+                      <td>${formatDisplayDate(bill.check_out_date)}</td>
+                      <td><strong>${bill.days}</strong></td>
+                      <td><strong>${formatCurrency(bill.price_per_day)}</strong></td>
+                      <td><strong>${formatCurrency(bill.total_amount)}</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="print-total">
+                <div class="total-label">Total Amount</div>
+                <div class="total-amount">${formatCurrency(bill.total_amount)}</div>
+              </div>
+              
+              <div class="print-footer">
+                <p>Thank you for choosing Vila POS System!</p>
+                <p style="font-size: 14px; margin-top: 10px; font-weight: 500;">We appreciate your business and hope you enjoyed your stay.</p>
+              </div>
+            </div>
           </div>
         </body>
       </html>

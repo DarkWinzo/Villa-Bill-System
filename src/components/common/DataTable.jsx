@@ -85,7 +85,7 @@ export const DataTable = ({
   }
 
   return (
-    <div className={cn('card overflow-hidden', className)}>
+    <div className={cn('glass-card overflow-hidden', className)}>
       {/* Search and Filters */}
       {(searchable || filterable) && (
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6">
@@ -115,12 +115,12 @@ export const DataTable = ({
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-dark-700">
+            <tr className="border-b border-white/20">
               {columns.map((column, index) => (
                 <th
                   key={index}
                   className={cn(
-                    'text-left py-3 px-2 sm:px-4 font-semibold text-slate-300 text-sm sm:text-base',
+                    'text-left py-4 px-2 sm:px-4 font-bold text-white text-sm sm:text-base bg-gradient-to-r from-purple-600/20 to-blue-600/20',
                     sortable && column.sortable !== false && 'cursor-pointer hover:text-white',
                     column.className
                   )}
@@ -148,7 +148,7 @@ export const DataTable = ({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: rowIndex * 0.05 }}
-                  className="border-b border-dark-800 hover:bg-dark-800/30 transition-colors"
+                  className="border-b border-white/10 hover:bg-white/5 transition-all duration-300 hover:scale-[1.01]"
                 >
                   {columns.map((column, colIndex) => (
                     <td key={colIndex} className={cn('py-3 px-2 sm:px-4 text-sm sm:text-base', column.cellClassName)}>
@@ -167,8 +167,8 @@ export const DataTable = ({
 
       {/* Pagination */}
       {pagination && totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-6 pt-6 border-t border-dark-700">
-          <div className="text-xs sm:text-sm text-slate-400 order-2 sm:order-1">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-6 pt-6 border-t border-white/20">
+          <div className="text-xs sm:text-sm text-white/70 order-2 sm:order-1">
             Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
           </div>
           
@@ -190,8 +190,8 @@ export const DataTable = ({
                   className={cn(
                     'px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm',
                     currentPage === page
-                      ? 'bg-primary-600 text-white'
-                      : 'text-slate-400 hover:text-white hover:bg-dark-700'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
                   )}
                 >
                   {page}
