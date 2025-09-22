@@ -8,6 +8,7 @@ files:
   - dist/**/*
   - public/electron.js
   - public/preload.js
+  - package.json
   - node_modules/**/*
   - "!node_modules/.cache/**/*"
   - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
@@ -17,12 +18,18 @@ files:
   - "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}"
   - "!**/{appveyor.yml,.travis.yml,circle.yml}"
   - "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+  - "!src/**/*"
+  - "!*.md"
+  - "!vite.config.js"
+  - "!tailwind.config.js"
+  - "!postcss.config.js"
 win:
   target:
     - target: nsis
       arch: [x64]
   publisherName: Vila POS Team
   verifyUpdateCodeSignature: false
+  requestedExecutionLevel: asInvoker
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
@@ -32,6 +39,9 @@ nsis:
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
+  runAfterFinish: true
+  createStartMenuShortcut: true
+  menuCategory: "Business"
 compression: normal
 npmRebuild: false
 nodeGypRebuild: false

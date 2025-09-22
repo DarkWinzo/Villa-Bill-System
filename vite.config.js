@@ -11,12 +11,16 @@ module.exports = defineConfig({
   },
   server: {
     port: 5173,
-    host: true
+    host: 'localhost',
+    strictPort: true,
+    cors: true
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
     chunkSizeWarningLimit: 1000,
+    target: 'esnext',
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -29,5 +33,6 @@ module.exports = defineConfig({
         }
       }
     }
-  }
+  },
+  base: './'
 })

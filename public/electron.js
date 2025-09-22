@@ -1,9 +1,11 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const path = require('path')
+const { spawn } = require('child_process')
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
 
 let mainWindow
+let viteProcess = null
 
 function createWindow() {
   // Create the browser window
@@ -27,12 +29,19 @@ function createWindow() {
     resizable: true,
     maximizable: true,
     fullscreenable: true,
-    center: true
+    center: true,
+    title: 'Vila POS System'
   })
 
   // Load the app
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173')
+    // Start Vite dev server programmatically
+    startViteServer().then(() => {
+      mainWindow.loadURL('http://localhost:5173')
+    }).catch(() => {
+      // Fallback to built files if dev server fails
+      mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+    })
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }
@@ -40,10 +49,8 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
     
-    // Start in fullscreen for better desktop app experience
-    if (!isDev) {
-      mainWindow.setFullScreen(true)
-    }
+    // Maximize window for better desktop app experience
+    mainWindow.maximize()
     
     if (isDev) {
       mainWindow.webContents.openDevTools()
@@ -52,10 +59,59 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null
+    if (viteProcess) {
+      viteProcess.kill()
+      viteProcess = null
+    }
   })
 
   // Set up menu
   createMenu()
+}
+
+function startViteServer() {
+  return new Promise((resolve, reject) => {
+    if (viteProcess) {
+      resolve()
+      return
+    }
+
+    const isWindows = process.platform === 'win32'
+    const npmCmd = isWindows ? 'npm.cmd' : 'npm'
+    
+    viteProcess = spawn(npmCmd, ['run', 'dev'], {
+      cwd: path.join(__dirname, '..'),
+      stdio: 'pipe'
+    })
+
+    let serverStarted = false
+    
+    viteProcess.stdout.on('data', (data) => {
+      const output = data.toString()
+      console.log('Vite:', output)
+      
+      if (output.includes('Local:') && !serverStarted) {
+        serverStarted = true
+        setTimeout(resolve, 2000) // Wait a bit for server to be fully ready
+      }
+    })
+
+    viteProcess.stderr.on('data', (data) => {
+      console.error('Vite Error:', data.toString())
+    })
+
+    viteProcess.on('error', (error) => {
+      console.error('Failed to start Vite server:', error)
+      reject(error)
+    })
+
+    // Timeout after 30 seconds
+    setTimeout(() => {
+      if (!serverStarted) {
+        reject(new Error('Vite server failed to start within 30 seconds'))
+      }
+    }, 30000)
+  })
 }
 
 function createMenu() {
@@ -63,14 +119,6 @@ function createMenu() {
     {
       label: 'File',
       submenu: [
-        {
-          label: 'New Window',
-          accelerator: 'CmdOrCtrl+N',
-          click: () => {
-            createWindow()
-          }
-        },
-        { type: 'separator' },
         {
           label: 'Exit',
           accelerator: 'CmdOrCtrl+Q',
@@ -105,21 +153,13 @@ function createMenu() {
         { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
-        {
-          label: 'Always on Top',
-          type: 'checkbox',
-          click: () => {
-            const isAlwaysOnTop = mainWindow.isAlwaysOnTop()
-            mainWindow.setAlwaysOnTop(!isAlwaysOnTop)
-          }
-        }
       ]
     },
     {
       label: 'Window',
       submenu: [
         { role: 'minimize' },
-        { role: 'zoom' },
+        { role: 'togglefullscreen' },
         { role: 'close' }
       ]
     },
@@ -152,14 +192,24 @@ app.whenReady().then(createWindow)
 
 // Quit when all windows are closed
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
+  if (viteProcess) {
+    viteProcess.kill()
+    viteProcess = null
   }
+  app.quit()
 })
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
+  }
+})
+
+// Handle app termination
+app.on('before-quit', () => {
+  if (viteProcess) {
+    viteProcess.kill()
+    viteProcess = null
   }
 })
 
