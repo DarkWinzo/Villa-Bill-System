@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+   @apply bg-dark-950 text-white;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

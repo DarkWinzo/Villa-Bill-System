@@ -4,7 +4,7 @@ import { ChevronUp, ChevronDown, Search, Filter } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { LoadingTable } from '../common/LoadingSpinner'
 
-export const DataTable = ({
+export const RoomManagement = ({
   data = [],
   columns = [],
   isLoading = false,
