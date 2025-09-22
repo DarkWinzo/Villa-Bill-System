@@ -28,7 +28,7 @@
   "build": {
     "appId": "com.vila.pos",
     "productName": "Vila POS System",
-    "electronVersion": "27.3.11",
+    "electronVersion": "27.1.3",
     "directories": {
       "output": "dist-electron",
       "buildResources": "build"
@@ -37,6 +37,7 @@
       "dist/**/*",
       "public/electron.js",
       "public/preload.js",
+      "package.json",
       "node_modules/**/*",
       "!node_modules/.cache/**/*"
     ],

@@ -8,6 +8,7 @@ files:
   - dist/**/*
   - public/electron.js
   - public/preload.js
+  - package.json
   - node_modules/**/*
   - "!node_modules/.cache/**/*"
   - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
