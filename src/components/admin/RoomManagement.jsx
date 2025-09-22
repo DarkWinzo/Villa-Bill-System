@@ -142,14 +142,14 @@ export const RoomManagement = () => {
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4 lg:flex-col lg:items-start lg:gap-3">
         <div className="flex items-center gap-3">
           <Hotel className="w-8 h-8 text-primary-500" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Room Management</h1>
+          <h1 className="text-3xl font-bold text-white lg:text-2xl">Room Management</h1>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"
+          className="btn-primary flex items-center gap-2 w-auto justify-center lg:w-full"
         >
           <Plus className="w-5 h-5" />
           Add Room
@@ -175,7 +175,7 @@ export const RoomManagement = () => {
         size="md"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Room Number *
@@ -241,18 +241,18 @@ export const RoomManagement = () => {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-row gap-3 pt-4 lg:flex-col">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="btn-secondary w-full sm:w-auto order-2 sm:order-1"
+              className="btn-secondary w-auto order-2 lg:w-full lg:order-1"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-primary w-full sm:w-auto order-1 sm:order-2 flex items-center justify-center gap-2"
+              className="btn-primary w-auto order-1 flex items-center justify-center gap-2 lg:w-full lg:order-2"
             >
               {isLoading ? (
                 <LoadingSpinner size="sm" color="white" />

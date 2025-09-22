@@ -45,14 +45,14 @@ export const AdminLayout = ({ children }) => {
       )}
 
       {/* Sidebar */}
-      <div className="lg:w-64 lg:flex-shrink-0">
+      <div className="w-64 flex-shrink-0 lg:w-56 md:w-48">
         <motion.div
           initial={false}
           animate={{ x: sidebarOpen ? 0 : '-100%' }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           className={cn(
-            'fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto',
-            'lg:relative lg:translate-x-0 lg:z-auto'
+            'fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto lg:w-56 md:w-48',
+            'xl:relative xl:translate-x-0 xl:z-auto lg:relative lg:translate-x-0 lg:z-auto'
           )}
         >
         <div className="flex h-full flex-col">
@@ -117,21 +117,21 @@ export const AdminLayout = ({ children }) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="bg-dark-900/50 backdrop-blur-xl border-b border-dark-700/50 px-4 py-4 lg:px-8 flex-shrink-0">
+        <header className="bg-dark-900/50 backdrop-blur-xl border-b border-dark-700/50 px-8 py-4 lg:px-6 md:px-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-slate-400 hover:text-white hover:bg-dark-800 rounded-lg transition-colors lg:hidden"
+              className="p-2 text-slate-400 hover:text-white hover:bg-dark-800 rounded-lg transition-colors xl:hidden lg:hidden"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-6 h-6 lg:w-5 lg:h-5" />
             </button>
             
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-4 lg:gap-3 md:gap-2">
               <div className="text-right">
-                <p className="text-xs sm:text-sm font-medium text-white">
+                <p className="text-sm font-medium text-white lg:text-xs">
                   Welcome back, {user?.username}
                 </p>
-                <p className="text-xs text-slate-400 hidden sm:block">
+                <p className="text-xs text-slate-400 md:hidden">
                   {new Date().toLocaleDateString('en-LK', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -145,7 +145,7 @@ export const AdminLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-8 lg:p-6 md:p-4 overflow-y-auto">
           {children}
         </main>
       </div>

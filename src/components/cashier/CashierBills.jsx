@@ -173,15 +173,15 @@ export const CashierBills = () => {
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4 lg:flex-col lg:items-start lg:gap-3">
         <div className="flex items-center gap-3">
           <Receipt className="w-8 h-8 text-primary-500" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">My Bills</h1>
+          <h1 className="text-3xl font-bold text-white lg:text-2xl">My Bills</h1>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 lg:grid-cols-2 lg:gap-3 md:grid-cols-1 md:gap-3">
         <div className="card card-hover">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
@@ -254,7 +254,7 @@ export const CashierBills = () => {
             {/* Customer Information */}
             <div>
               <h3 className="text-lg font-semibold text-white mb-3">Customer Information</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-1 lg:gap-2">
                 <div>
                   <span className="text-slate-400">Name:</span>
                   <span className="ml-2 text-white font-medium">{selectedBill.customer_name}</span>
@@ -263,7 +263,7 @@ export const CashierBills = () => {
                   <span className="text-slate-400">Phone:</span>
                   <span className="ml-2 text-white">{selectedBill.customer_phone || 'N/A'}</span>
                 </div>
-                <div className="sm:col-span-2">
+                <div className="col-span-2 lg:col-span-1">
                   <span className="text-slate-400">Address:</span>
                   <span className="ml-2 text-white">{selectedBill.customer_address || 'N/A'}</span>
                 </div>
@@ -273,7 +273,7 @@ export const CashierBills = () => {
             {/* Booking Details */}
             <div>
               <h3 className="text-lg font-semibold text-white mb-3">Booking Details</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-1 lg:gap-2">
                 <div>
                   <span className="text-slate-400">Room Number:</span>
                   <span className="ml-2 text-white font-medium">{selectedBill.room_number || 'N/A'}</span>
@@ -312,16 +312,16 @@ export const CashierBills = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <div className="flex flex-row gap-3 pt-4 lg:flex-col">
               <button
                 onClick={() => setIsViewModalOpen(false)}
-                className="btn-secondary w-full sm:w-auto order-2 sm:order-1"
+                className="btn-secondary w-auto order-2 lg:w-full lg:order-1"
               >
                 Close
               </button>
               <button
                 onClick={() => handlePrintBill(selectedBill)}
-                className="btn-primary w-full sm:w-auto order-1 sm:order-2 flex items-center justify-center gap-2"
+                className="btn-primary w-auto order-1 flex items-center justify-center gap-2 lg:w-full lg:order-2"
               >
                 <Printer className="w-4 h-4" />
                 Print Bill

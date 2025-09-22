@@ -104,10 +104,10 @@ export const CreateBill = () => {
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4 lg:flex-col lg:items-start lg:gap-3">
         <div className="flex items-center gap-3">
           <PlusCircle className="w-8 h-8 text-primary-500" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Create New Bill</h1>
+          <h1 className="text-3xl font-bold text-white lg:text-2xl">Create New Bill</h1>
         </div>
         <div className="flex items-center gap-2 text-slate-400">
           <Calculator className="w-5 h-5" />
@@ -123,7 +123,7 @@ export const CreateBill = () => {
             <h2 className="text-xl font-semibold text-white">Bill Information</h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Bill Number
@@ -173,7 +173,7 @@ export const CreateBill = () => {
               )}
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Phone Number
@@ -236,7 +236,7 @@ export const CreateBill = () => {
               )}
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Check-in Date *
@@ -282,7 +282,7 @@ export const CreateBill = () => {
               <h2 className="text-xl font-semibold text-white">Calculation Summary</h2>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4 lg:grid-cols-1 lg:gap-3">
               <div className="text-center p-4 bg-dark-800/50 rounded-xl">
                 <p className="text-slate-400 text-sm mb-1">Number of Days</p>
                 <p className="text-2xl font-bold text-white">{calculatedDays}</p>
@@ -306,18 +306,18 @@ export const CreateBill = () => {
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+        <div className="flex flex-row gap-4 pt-4 lg:flex-col">
           <button
             type="button"
             onClick={handleReset}
-            className="btn-secondary w-full sm:w-auto order-2 sm:order-1"
+            className="btn-secondary w-auto order-2 lg:w-full lg:order-1"
           >
             Reset Form
           </button>
           <button
             type="submit"
             disabled={isLoading || !selectedRoom || calculatedDays === 0}
-            className="btn-primary w-full sm:flex-1 order-1 sm:order-2 flex items-center justify-center gap-2"
+            className="btn-primary flex-1 order-1 flex items-center justify-center gap-2 lg:w-full lg:order-2"
           >
             {isLoading ? (
               <LoadingSpinner size="sm" color="white" />

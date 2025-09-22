@@ -73,16 +73,16 @@ export const Modal = ({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', duration: 0.3 }}
             className={cn(
-              'relative w-full bg-dark-900/95 backdrop-blur-xl border border-dark-700/50 rounded-xl sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto',
+              'relative w-full bg-dark-900/95 backdrop-blur-xl border border-dark-700/50 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto',
               sizeClasses[size],
               className
             )}
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-dark-700/50 flex-shrink-0">
+              <div className="flex items-center justify-between p-6 border-b border-dark-700/50 flex-shrink-0 lg:p-4">
                 {title && (
-                  <h2 className="text-lg sm:text-xl font-semibold text-white">
+                  <h2 className="text-xl font-semibold text-white lg:text-lg">
                     {title}
                   </h2>
                 )}
@@ -98,7 +98,7 @@ export const Modal = ({
             )}
 
             {/* Content */}
-            <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
+            <div className="p-6 flex-1 overflow-y-auto lg:p-4">
               {children}
             </div>
           </motion.div>
