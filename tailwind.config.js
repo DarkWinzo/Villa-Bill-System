@@ -37,3 +37,6 @@ export default {
   },
   plugins: [],
 }
+      },
+      background: '#0f172a',
+      foreground: '#ffffff'
