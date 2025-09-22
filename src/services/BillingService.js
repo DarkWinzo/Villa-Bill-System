@@ -1,4 +1,4 @@
-const moment = require('moment');
+import moment from 'moment';
 
 class BillingService {
   constructor(dbService) {
@@ -99,4 +99,4 @@ class BillingService {
   }
 }
 
-module.exports = BillingService;
+export default BillingService;

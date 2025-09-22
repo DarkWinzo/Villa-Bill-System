@@ -1,6 +1,11 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const fs = require('fs');
+import sqlite3 from 'sqlite3';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 class DatabaseService {
   constructor() {
@@ -122,4 +127,4 @@ class DatabaseService {
   }
 }
 
-module.exports = DatabaseService;
+export default DatabaseService;

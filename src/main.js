@@ -1,12 +1,17 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
-const path = require('path');
-const isDev = process.argv.includes('--dev');
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// ES module compatibility
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Database and services
-const DatabaseService = require('./services/DatabaseService');
-const AuthService = require('./services/AuthService');
-const RoomService = require('./services/RoomService');
-const BillingService = require('./services/BillingService');
+import DatabaseService from './services/DatabaseService.js';
+import AuthService from './services/AuthService.js';
+import RoomService from './services/RoomService.js';
+import BillingService from './services/BillingService.js';
 
 let mainWindow;
 let currentUser = null;
@@ -17,6 +22,8 @@ const authService = new AuthService(dbService);
 const roomService = new RoomService(dbService);
 const billingService = new BillingService(dbService);
 
+const isDev = process.env.NODE_ENV === 'development';
+
 async function createWindow() {
   // Initialize database
   await dbService.initialize();
@@ -25,26 +32,30 @@ async function createWindow() {
   await authService.createDefaultAdmin();
 
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 1400,
+    height: 900,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, '../assets/icon.png'),
     show: false,
-    titleBarStyle: 'default'
+    titleBarStyle: 'default',
+    webSecurity: true
   });
 
-  // Load login page initially
-  mainWindow.loadFile(path.join(__dirname, 'renderer/login.html'));
+  // Load the app
+  if (isDev) {
+    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+  }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    if (isDev) {
-      mainWindow.webContents.openDevTools();
-    }
   });
 
   mainWindow.on('closed', () => {
@@ -64,7 +75,9 @@ function createMenu() {
           label: 'Logout',
           click: () => {
             currentUser = null;
-            mainWindow.loadFile(path.join(__dirname, 'renderer/login.html'));
+            if (mainWindow) {
+              mainWindow.webContents.send('auth:logout');
+            }
           }
         },
         { type: 'separator' },

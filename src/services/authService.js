@@ -1,7 +1,10 @@
-// Mock authentication service for offline functionality
+// Browser-only authentication service for React frontend
 class AuthService {
   constructor() {
-    this.initializeDefaultUsers()
+    // Only initialize if we're in a browser environment
+    if (typeof window !== 'undefined' && window.localStorage) {
+      this.initializeDefaultUsers()
+    }
   }
 
   initializeDefaultUsers() {
@@ -28,12 +31,17 @@ class AuthService {
   }
 
   getStoredUsers() {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return []
+    }
     const users = localStorage.getItem('vila-pos-users')
     return users ? JSON.parse(users) : []
   }
 
   saveUsers(users) {
-    localStorage.setItem('vila-pos-users', JSON.stringify(users))
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('vila-pos-users', JSON.stringify(users))
+    }
   }
 
   async login(credentials) {

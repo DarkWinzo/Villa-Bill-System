@@ -20,9 +20,17 @@ class AuthService {
           [config.admin.username, hashedPassword, 'admin']
         );
         console.log(`Default admin user created: ${config.admin.username}/${config.admin.password}`);
+        
+        // Also create a default cashier
+        const cashierPassword = await bcrypt.hash('cashier123', 10);
+        await this.db.run(
+          'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+          ['cashier1', cashierPassword, 'cashier']
+        );
+        console.log('Default cashier user created: cashier1/cashier123');
       }
     } catch (error) {
-      console.error('Error creating default admin:', error);
+      console.error('Error creating default users:', error);
     }
   }
 

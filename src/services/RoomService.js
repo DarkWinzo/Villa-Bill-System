@@ -83,4 +83,4 @@ class RoomService {
   }
 }
 
-module.exports = RoomService;
+export default RoomService;
