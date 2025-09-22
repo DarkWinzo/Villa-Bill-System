@@ -1,0 +1,18 @@
+appId: com.vila.pos
+productName: Vila POS System
+directories:
+  output: dist-electron
+files:
+  - dist/**/*
+  - public/electron.js
+  - public/preload.js
+  - assets/**/*
+  - node_modules/**/*
+win:
+  target: nsis
+  icon: assets/icon.png
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+compression: store
+npmRebuild: false
