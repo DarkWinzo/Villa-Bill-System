@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { loginSchema } from '../utils/validation';
 import { useAuthStore } from '../stores/authStore';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { LogIn, User, Lock, Eye, EyeOff } from 'lucide-react';
 
 const LoginPage = () => {
