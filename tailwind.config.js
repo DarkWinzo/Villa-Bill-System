@@ -31,12 +31,11 @@ export default {
           800: '#1e293b',
           900: '#0f172a',
          950: '#020617',
-        }
+        },
+      background: '#0f172a',
+      foreground: '#ffffff'
       },
     },
   },
   plugins: [],
 }
-      },
-      background: '#0f172a',
-      foreground: '#ffffff'
