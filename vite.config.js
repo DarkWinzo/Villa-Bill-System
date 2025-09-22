@@ -15,6 +15,19 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['framer-motion', 'lucide-react'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'yup'],
+          state: ['zustand'],
+          utils: ['date-fns', 'clsx', 'tailwind-merge']
+        }
+      }
+    }
   }
 })
