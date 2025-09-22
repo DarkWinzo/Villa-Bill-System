@@ -19,10 +19,17 @@ import {
   ArrowRight,
   Crown,
   UserCheck,
-  Palette,
-  Sun,
+  Sparkles,
+  Heart,
+  Star,
+  Coffee,
   Moon,
-  Monitor
+  Sun,
+  Zap,
+  Palette,
+  Music,
+  Camera,
+  Gift
 } from 'lucide-react'
 
 const LoginPage = () => {
@@ -31,18 +38,49 @@ const LoginPage = () => {
   const [isBlocked, setIsBlocked] = useState(false)
   const [blockTimeLeft, setBlockTimeLeft] = useState(0)
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [theme, setTheme] = useState('dark')
+  const [theme, setTheme] = useState('gradient')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
+  const [particles, setParticles] = useState([])
+  const [greeting, setGreeting] = useState('')
   
   const { login, isLoading, error } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Update current time every second
+  // Generate floating particles
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
+    const generateParticles = () => {
+      const newParticles = []
+      for (let i = 0; i < 20; i++) {
+        newParticles.push({
+          id: i,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          size: Math.random() * 4 + 2,
+          duration: Math.random() * 20 + 10,
+          delay: Math.random() * 5
+        })
+      }
+      setParticles(newParticles)
+    }
+    generateParticles()
+  }, [theme])
+
+  // Update current time and greeting
+  useEffect(() => {
+    const updateTimeAndGreeting = () => {
+      const now = new Date()
+      setCurrentTime(now)
+      
+      const hour = now.getHours()
+      if (hour < 12) setGreeting('Good Morning')
+      else if (hour < 17) setGreeting('Good Afternoon')
+      else if (hour < 21) setGreeting('Good Evening')
+      else setGreeting('Good Night')
+    }
+    
+    updateTimeAndGreeting()
+    const timer = setInterval(updateTimeAndGreeting, 1000)
     return () => clearInterval(timer)
   }, [])
 
@@ -91,10 +129,7 @@ const LoginPage = () => {
       const result = await login(data)
       
       if (result.success) {
-        // Reset attempts on successful login
         setLoginAttempts(0)
-        
-        // Navigate based on user role
         const redirectPath = location.state?.from?.pathname || 
           (result.user.role === 'admin' ? '/admin' : '/cashier')
         navigate(redirectPath, { replace: true })
@@ -127,86 +162,146 @@ const LoginPage = () => {
   }
 
   const themes = {
-    dark: {
-      name: 'Dark Ocean',
-      bg: 'from-slate-900 via-blue-900 to-slate-900',
-      card: 'bg-slate-800/95',
-      accent: 'from-blue-600 to-cyan-600',
+    gradient: {
+      name: 'Ocean Gradient',
+      bg: 'from-blue-900 via-purple-900 to-pink-900',
+      card: 'bg-white/10',
+      accent: 'from-blue-500 to-purple-600',
       text: 'text-white',
-      icon: Moon
+      icon: Sparkles,
+      particles: 'bg-white/20'
     },
-    light: {
-      name: 'Light Sky',
-      bg: 'from-blue-50 via-indigo-50 to-purple-50',
-      card: 'bg-white/95',
-      accent: 'from-blue-600 to-purple-600',
-      text: 'text-slate-800',
-      icon: Sun
-    },
-    purple: {
-      name: 'Purple Dream',
-      bg: 'from-purple-900 via-violet-900 to-indigo-900',
-      card: 'bg-purple-800/95',
-      accent: 'from-purple-600 to-pink-600',
+    sunset: {
+      name: 'Sunset Dream',
+      bg: 'from-orange-400 via-red-500 to-pink-600',
+      card: 'bg-white/15',
+      accent: 'from-yellow-400 to-red-500',
       text: 'text-white',
-      icon: Palette
+      icon: Sun,
+      particles: 'bg-yellow-300/30'
     },
-    green: {
-      name: 'Forest Green',
-      bg: 'from-emerald-900 via-teal-900 to-green-900',
-      card: 'bg-emerald-800/95',
-      accent: 'from-emerald-600 to-teal-600',
+    forest: {
+      name: 'Forest Magic',
+      bg: 'from-green-800 via-emerald-700 to-teal-600',
+      card: 'bg-white/10',
+      accent: 'from-green-400 to-emerald-600',
       text: 'text-white',
-      icon: Monitor
+      icon: Coffee,
+      particles: 'bg-green-300/25'
+    },
+    midnight: {
+      name: 'Midnight Sky',
+      bg: 'from-indigo-900 via-purple-900 to-gray-900',
+      card: 'bg-white/8',
+      accent: 'from-indigo-400 to-purple-500',
+      text: 'text-white',
+      icon: Moon,
+      particles: 'bg-indigo-300/20'
+    },
+    candy: {
+      name: 'Candy Pop',
+      bg: 'from-pink-400 via-purple-400 to-indigo-400',
+      card: 'bg-white/15',
+      accent: 'from-pink-500 to-purple-600',
+      text: 'text-white',
+      icon: Heart,
+      particles: 'bg-pink-300/30'
+    },
+    electric: {
+      name: 'Electric Vibe',
+      bg: 'from-cyan-400 via-blue-500 to-purple-600',
+      card: 'bg-white/12',
+      accent: 'from-cyan-400 to-blue-600',
+      text: 'text-white',
+      icon: Zap,
+      particles: 'bg-cyan-300/25'
     }
   }
 
   const currentTheme = themes[theme]
 
+  const floatingIcons = [Star, Heart, Sparkles, Gift, Music, Camera]
+
   return (
     <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bg} flex items-center justify-center p-4 relative overflow-hidden`}>
-      {/* Animated background elements */}
+      {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden">
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className={`absolute w-2 h-2 ${currentTheme.particles} rounded-full blur-sm`}
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+            }}
+            animate={{
+              y: [0, -100, 0],
+              x: [0, Math.sin(particle.id) * 50, 0],
+              scale: [1, 1.5, 1],
+              opacity: [0.3, 0.8, 0.3],
+            }}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              delay: particle.delay,
+              ease: "easeInOut"
+            }}
+          />
+        ))}
+
+        {/* Floating icons */}
+        {floatingIcons.map((Icon, index) => (
+          <motion.div
+            key={index}
+            className="absolute text-white/10"
+            style={{
+              left: `${10 + index * 15}%`,
+              top: `${20 + (index % 2) * 60}%`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 360],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 8 + index * 2,
+              repeat: Infinity,
+              delay: index * 0.5,
+              ease: "easeInOut"
+            }}
+          >
+            <Icon className="w-8 h-8" />
+          </motion.div>
+        ))}
+
+        {/* Gradient orbs */}
         <motion.div 
           animate={{ 
             x: [0, 100, 0],
             y: [0, -100, 0],
-            scale: [1, 1.2, 1],
+            scale: [1, 1.3, 1],
             rotate: [0, 180, 360]
-          }}
-          transition={{ 
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
-        />
-        <motion.div 
-          animate={{ 
-            x: [0, -100, 0],
-            y: [0, 100, 0],
-            scale: [1, 1.1, 1],
-            rotate: [360, 180, 0]
           }}
           transition={{ 
             duration: 25,
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"
+          className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl"
         />
         <motion.div 
           animate={{ 
-            scale: [1, 1.3, 1],
-            rotate: [0, 360, 0],
-            opacity: [0.3, 0.6, 0.3]
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+            scale: [1, 1.2, 1],
+            rotate: [360, 180, 0]
           }}
           transition={{ 
-            duration: 15,
+            duration: 30,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "linear"
           }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"
+          className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-r from-pink-500/20 to-yellow-500/20 rounded-full blur-3xl"
         />
       </div>
 
@@ -218,10 +313,10 @@ const LoginPage = () => {
       >
         <div className="relative">
           <motion.button
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.1, rotate: 10 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowThemeSelector(!showThemeSelector)}
-            className={`p-3 ${currentTheme.card} backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl ${currentTheme.text} hover:shadow-3xl transition-all duration-300`}
+            className={`p-4 ${currentTheme.card} backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl ${currentTheme.text} hover:shadow-3xl transition-all duration-300`}
           >
             <currentTheme.icon className="w-6 h-6" />
           </motion.button>
@@ -232,14 +327,17 @@ const LoginPage = () => {
                 initial={{ opacity: 0, scale: 0.8, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: -10 }}
-                className={`absolute top-16 right-0 ${currentTheme.card} backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-4 min-w-[200px]`}
+                className={`absolute top-20 right-0 ${currentTheme.card} backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-4 min-w-[220px]`}
               >
-                <h3 className={`${currentTheme.text} font-bold mb-3 text-sm`}>Choose Theme</h3>
+                <h3 className={`${currentTheme.text} font-bold mb-4 text-sm flex items-center gap-2`}>
+                  <Palette className="w-4 h-4" />
+                  Choose Your Vibe
+                </h3>
                 <div className="space-y-2">
                   {Object.entries(themes).map(([key, themeOption]) => (
                     <motion.button
                       key={key}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => {
                         setTheme(key)
@@ -247,12 +345,13 @@ const LoginPage = () => {
                       }}
                       className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
                         theme === key 
-                          ? `bg-gradient-to-r ${themeOption.accent} text-white shadow-lg` 
+                          ? `bg-gradient-to-r ${themeOption.accent} text-white shadow-lg transform scale-105` 
                           : `${currentTheme.text} hover:bg-white/10`
                       }`}
                     >
                       <themeOption.icon className="w-4 h-4" />
                       <span className="text-sm font-medium">{themeOption.name}</span>
+                      {theme === key && <CheckCircle className="w-4 h-4 ml-auto" />}
                     </motion.button>
                   ))}
                 </div>
@@ -264,48 +363,60 @@ const LoginPage = () => {
 
       {/* Main login container */}
       <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ 
-          duration: 0.8,
+          duration: 1,
           type: "spring",
-          stiffness: 80,
+          stiffness: 100,
           damping: 20
         }}
         className="relative z-10 w-full max-w-lg"
       >
         {/* Glass morphism card */}
-        <div className={`${currentTheme.card} backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl`}>
+        <div className={`${currentTheme.card} backdrop-blur-2xl border border-white/30 rounded-3xl p-8 shadow-2xl relative overflow-hidden`}>
+          {/* Card background pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+          </div>
+
           {/* Header section */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-center mb-8"
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="text-center mb-8 relative z-10"
           >
             <motion.div
-              whileHover={{ scale: 1.1, rotate: 10 }}
+              whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
               animate={{ 
                 boxShadow: [
-                  "0 0 20px rgba(59, 130, 246, 0.3)",
-                  "0 0 40px rgba(147, 51, 234, 0.4)",
-                  "0 0 20px rgba(59, 130, 246, 0.3)"
+                  "0 0 30px rgba(255, 255, 255, 0.3)",
+                  "0 0 50px rgba(255, 255, 255, 0.5)",
+                  "0 0 30px rgba(255, 255, 255, 0.3)"
                 ]
               }}
               transition={{ 
                 boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
               }}
-              className={`mx-auto w-24 h-24 bg-gradient-to-br ${currentTheme.accent} rounded-2xl flex items-center justify-center mb-6 shadow-2xl`}
+              className={`mx-auto w-28 h-28 bg-gradient-to-br ${currentTheme.accent} rounded-3xl flex items-center justify-center mb-6 shadow-2xl relative overflow-hidden`}
             >
-              <Hotel className="w-12 h-12 text-white drop-shadow-lg" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+              <Hotel className="w-14 h-14 text-white drop-shadow-lg relative z-10" />
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-2 border-2 border-white/30 rounded-2xl"
+              />
             </motion.div>
             
             <motion.h1
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className={`text-4xl font-bold bg-gradient-to-r ${currentTheme.accent} bg-clip-text text-transparent mb-3`}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className={`text-4xl font-bold bg-gradient-to-r ${currentTheme.accent} bg-clip-text text-transparent mb-2`}
             >
               Vila POS System
             </motion.h1>
@@ -313,28 +424,38 @@ const LoginPage = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} flex items-center justify-center gap-2 mb-2`}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className={`${currentTheme.text} flex items-center justify-center gap-2 mb-3 text-lg font-medium`}
             >
-              <Shield className="w-4 h-4" />
-              Secure Hotel Management
+              <Shield className="w-5 h-5" />
+              {greeting}! Welcome Back
             </motion.p>
             
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className={`text-sm ${theme === 'light' ? 'text-slate-500' : 'text-slate-500'}`}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className={`text-sm ${currentTheme.text} opacity-80 flex items-center justify-center gap-2`}
             >
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                ✨
+              </motion.div>
               {currentTime.toLocaleString('en-LK', {
                 weekday: 'long',
-                year: 'numeric',
-                month: 'long',
+                month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+                minute: '2-digit'
               })}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+              >
+                ✨
+              </motion.div>
             </motion.div>
           </motion.div>
 
@@ -345,12 +466,17 @@ const LoginPage = () => {
                 initial={{ opacity: 0, scale: 0.9, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                className="mb-6 p-4 bg-red-900/50 border border-red-700/50 rounded-xl backdrop-blur-sm"
+                className="mb-6 p-4 bg-red-500/20 border border-red-400/50 rounded-2xl backdrop-blur-sm"
               >
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <motion.div
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                  >
+                    <AlertCircle className="w-6 h-6 text-red-300 flex-shrink-0" />
+                  </motion.div>
                   <div>
-                    <p className="text-red-200 font-semibold text-sm">Account Temporarily Locked</p>
+                    <p className="text-red-200 font-semibold text-sm">Account Temporarily Locked 🔒</p>
                     <p className="text-red-300 text-sm">
                       Too many failed attempts. Try again in {formatTime(blockTimeLeft)}
                     </p>
@@ -363,39 +489,40 @@ const LoginPage = () => {
           {/* Login form */}
           <form 
             onSubmit={handleSubmit(onSubmit)} 
-            className="space-y-7"
+            className="space-y-6 relative z-10"
           >
             {/* Username field */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
             >
               <label htmlFor="username" className={`block text-sm font-bold ${currentTheme.text} mb-3 flex items-center gap-2`}>
-                <User className="w-4 h-4" />
+                <User className="w-5 h-5" />
                 Username
               </label>
               <div className="relative group">
-                <input
+                <motion.input
+                  whileFocus={{ scale: 1.02 }}
                   {...register('username')}
                   type="text"
                   id="username"
                   disabled={isBlocked}
                   className={`
-                    w-full px-4 py-4 ${theme === 'light' ? 'bg-white/70' : 'bg-slate-700/50'} backdrop-blur-sm border rounded-xl
-                    ${currentTheme.text} ${theme === 'light' ? 'placeholder-slate-400' : 'placeholder-slate-400'} font-medium text-lg
-                    focus:outline-none focus:ring-2 ${theme === 'light' ? 'focus:bg-white/90' : 'focus:bg-slate-600/50'}
+                    w-full px-6 py-4 bg-white/10 backdrop-blur-sm border-2 rounded-2xl
+                    ${currentTheme.text} placeholder-white/60 font-medium text-lg
+                    focus:outline-none focus:ring-2 focus:bg-white/15
                     transition-all duration-300 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
-                    ${theme === 'light' ? 'hover:bg-white/80' : 'hover:bg-slate-600/30'}
+                    hover:bg-white/15 hover:border-white/40
                     ${getFieldStatus('username') === 'error' 
-                      ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' 
+                      ? 'border-red-400/60 focus:ring-red-400/50 focus:border-red-400' 
                       : getFieldStatus('username') === 'success'
-                      ? 'border-green-500/50 focus:ring-green-500/50 focus:border-green-500'
-                      : `${theme === 'light' ? 'border-slate-300/50' : 'border-slate-600/50'} focus:ring-blue-500/50 focus:border-blue-500`
+                      ? 'border-green-400/60 focus:ring-green-400/50 focus:border-green-400'
+                      : 'border-white/30 focus:ring-white/30 focus:border-white/50'
                     }
                   `}
-                  placeholder="Enter username"
+                  placeholder="Enter your username"
                 />
                 
                 {/* Field status indicator */}
@@ -408,9 +535,19 @@ const LoginPage = () => {
                       className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10"
                     >
                       {getFieldStatus('username') === 'success' ? (
-                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <CheckCircle className="w-6 h-6 text-green-400" />
+                        </motion.div>
                       ) : getFieldStatus('username') === 'error' ? (
-                        <AlertCircle className="w-5 h-5 text-red-400" />
+                        <motion.div
+                          animate={{ shake: [0, -5, 5, 0] }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <AlertCircle className="w-6 h-6 text-red-400" />
+                        </motion.div>
                       ) : null}
                     </motion.div>
                   )}
@@ -423,7 +560,7 @@ const LoginPage = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="mt-3 text-sm text-red-400 flex items-center gap-2 bg-red-900/20 p-2 rounded-lg"
+                    className="mt-3 text-sm text-red-300 flex items-center gap-2 bg-red-500/20 p-3 rounded-xl backdrop-blur-sm"
                   >
                     <AlertCircle className="w-4 h-4" />
                     {errors.username.message}
@@ -434,35 +571,36 @@ const LoginPage = () => {
 
             {/* Password field */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
             >
               <label htmlFor="password" className={`block text-sm font-bold ${currentTheme.text} mb-3 flex items-center gap-2`}>
-                <Lock className="w-4 h-4" />
+                <Lock className="w-5 h-5" />
                 Password
               </label>
               <div className="relative group">
-                <input
+                <motion.input
+                  whileFocus={{ scale: 1.02 }}
                   {...register('password')}
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   disabled={isBlocked}
                   className={`
-                    w-full px-4 pr-16 py-4 ${theme === 'light' ? 'bg-white/70' : 'bg-slate-700/50'} backdrop-blur-sm border rounded-xl
-                    ${currentTheme.text} ${theme === 'light' ? 'placeholder-slate-400' : 'placeholder-slate-400'} font-medium text-lg
-                    focus:outline-none focus:ring-2 ${theme === 'light' ? 'focus:bg-white/90' : 'focus:bg-slate-600/50'}
+                    w-full px-6 pr-16 py-4 bg-white/10 backdrop-blur-sm border-2 rounded-2xl
+                    ${currentTheme.text} placeholder-white/60 font-medium text-lg
+                    focus:outline-none focus:ring-2 focus:bg-white/15
                     transition-all duration-300 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
-                    ${theme === 'light' ? 'hover:bg-white/80' : 'hover:bg-slate-600/30'}
+                    hover:bg-white/15 hover:border-white/40
                     ${getFieldStatus('password') === 'error' 
-                      ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' 
+                      ? 'border-red-400/60 focus:ring-red-400/50 focus:border-red-400' 
                       : getFieldStatus('password') === 'success'
-                      ? 'border-green-500/50 focus:ring-green-500/50 focus:border-green-500'
-                      : `${theme === 'light' ? 'border-slate-300/50' : 'border-slate-600/50'} focus:ring-blue-500/50 focus:border-blue-500`
+                      ? 'border-green-400/60 focus:ring-green-400/50 focus:border-green-400'
+                      : 'border-white/30 focus:ring-white/30 focus:border-white/50'
                     }
                   `}
-                  placeholder="Enter password"
+                  placeholder="Enter your password"
                 />
                 
                 {/* Password visibility toggle */}
@@ -472,9 +610,9 @@ const LoginPage = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isBlocked}
-                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 ${theme === 'light' ? 'text-slate-600 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'} transition-all duration-300 disabled:opacity-50 hover:scale-110 z-10`}
+                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 ${currentTheme.text} hover:text-white transition-all duration-300 disabled:opacity-50 z-10 p-1 rounded-lg hover:bg-white/10`}
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
                 </motion.button>
                 
                 {/* Field status indicator */}
@@ -484,12 +622,22 @@ const LoginPage = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      className="absolute right-12 top-1/2 transform -translate-y-1/2 z-10"
+                      className="absolute right-14 top-1/2 transform -translate-y-1/2 z-10"
                     >
                       {getFieldStatus('password') === 'success' ? (
-                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <CheckCircle className="w-6 h-6 text-green-400" />
+                        </motion.div>
                       ) : getFieldStatus('password') === 'error' ? (
-                        <AlertCircle className="w-5 h-5 text-red-400" />
+                        <motion.div
+                          animate={{ shake: [0, -5, 5, 0] }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <AlertCircle className="w-6 h-6 text-red-400" />
+                        </motion.div>
                       ) : null}
                     </motion.div>
                   )}
@@ -502,7 +650,7 @@ const LoginPage = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="mt-3 text-sm text-red-400 flex items-center gap-2 bg-red-900/20 p-2 rounded-lg"
+                    className="mt-3 text-sm text-red-300 flex items-center gap-2 bg-red-500/20 p-3 rounded-xl backdrop-blur-sm"
                   >
                     <AlertCircle className="w-4 h-4" />
                     {errors.password.message}
@@ -518,10 +666,15 @@ const LoginPage = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="p-4 bg-yellow-900/50 border border-yellow-700/50 rounded-xl backdrop-blur-sm"
+                  className="p-4 bg-yellow-500/20 border border-yellow-400/50 rounded-2xl backdrop-blur-sm"
                 >
                   <p className="text-yellow-200 text-sm flex items-center gap-2 font-medium">
-                    <AlertCircle className="w-4 h-4" />
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 0.5, repeat: Infinity }}
+                    >
+                      <AlertCircle className="w-5 h-5" />
+                    </motion.div>
                     {loginAttempts} failed attempt{loginAttempts > 1 ? 's' : ''}. 
                     {5 - loginAttempts} attempt{5 - loginAttempts > 1 ? 's' : ''} remaining.
                   </p>
@@ -536,10 +689,15 @@ const LoginPage = () => {
                   initial={{ opacity: 0, scale: 0.9, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                  className="p-4 bg-red-900/50 border border-red-700/50 rounded-xl backdrop-blur-sm"
+                  className="p-4 bg-red-500/20 border border-red-400/50 rounded-2xl backdrop-blur-sm"
                 >
                   <p className="text-red-200 text-sm flex items-center gap-2 font-medium">
-                    <AlertCircle className="w-4 h-4" />
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 0.5, repeat: Infinity }}
+                    >
+                      <AlertCircle className="w-5 h-5" />
+                    </motion.div>
                     {errors.root.message}
                   </p>
                 </motion.div>
@@ -548,18 +706,18 @@ const LoginPage = () => {
 
             {/* Submit button */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.6 }}
             >
               <motion.button
-                whileHover={{ scale: isBlocked ? 1 : 1.05 }}
+                whileHover={{ scale: isBlocked ? 1 : 1.05, y: isBlocked ? 0 : -2 }}
                 whileTap={{ scale: isBlocked ? 1 : 0.98 }}
                 animate={!isBlocked && !isLoading ? {
                   boxShadow: [
-                    "0 4px 20px rgba(59, 130, 246, 0.3)",
-                    "0 8px 30px rgba(147, 51, 234, 0.4)",
-                    "0 4px 20px rgba(59, 130, 246, 0.3)"
+                    "0 10px 30px rgba(255, 255, 255, 0.2)",
+                    "0 15px 40px rgba(255, 255, 255, 0.3)",
+                    "0 10px 30px rgba(255, 255, 255, 0.2)"
                   ]
                 } : {}}
                 transition={{ 
@@ -568,34 +726,49 @@ const LoginPage = () => {
                 type="submit"
                 disabled={isLoading || isBlocked || !isValid}
                 className={`
-                  w-full py-5 px-6 rounded-2xl font-bold text-white text-lg
+                  w-full py-5 px-8 rounded-2xl font-bold text-white text-lg
                   transition-all duration-300 ease-out
                   flex items-center justify-center gap-3
                   disabled:opacity-50 disabled:cursor-not-allowed
-                  shadow-2xl
+                  shadow-2xl relative overflow-hidden
                   ${isBlocked 
-                    ? `${theme === 'light' ? 'bg-slate-400/50' : 'bg-slate-600/50'}` 
+                    ? 'bg-gray-600/50' 
                     : `bg-gradient-to-r ${currentTheme.accent} hover:shadow-3xl transform hover:-translate-y-1`
                   }
                 `}
               >
-                {isLoading ? (
-                  <>
-                    <LoadingSpinner size="sm" color="white" />
-                    <span>Authenticating...</span>
-                  </>
-                ) : isBlocked ? (
-                  <>
-                    <Lock className="w-5 h-5" />
-                    <span>Account Locked</span>
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="w-5 h-5" />
-                    <span>Sign In</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative z-10 flex items-center gap-3">
+                  {isLoading ? (
+                    <>
+                      <LoadingSpinner size="sm" color="white" />
+                      <span>Authenticating...</span>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        ✨
+                      </motion.div>
+                    </>
+                  ) : isBlocked ? (
+                    <>
+                      <Lock className="w-6 h-6" />
+                      <span>Account Locked</span>
+                      🔒
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-6 h-6" />
+                      <span>Sign In</span>
+                      <motion.div
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      >
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.div>
+                    </>
+                  )}
+                </div>
               </motion.button>
             </motion.div>
           </form>
@@ -605,35 +778,93 @@ const LoginPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0, duration: 0.6 }}
-            className="mt-8 text-center space-y-6"
+            className="mt-8 text-center space-y-6 relative z-10"
           >
-            <div className={`flex items-center justify-center gap-2 ${theme === 'light' ? 'text-slate-600' : 'text-white/60'} text-sm font-medium`}>
-              <Shield className="w-4 h-4" />
-              <span className={theme === 'light' ? 'text-slate-600' : 'text-slate-400'}>Enterprise-Grade Security</span>
+            <div className={`flex items-center justify-center gap-2 ${currentTheme.text} opacity-80 text-sm font-medium`}>
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Shield className="w-5 h-5" />
+              </motion.div>
+              <span>Enterprise-Grade Security</span>
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+              >
+                🛡️
+              </motion.div>
             </div>
             
-            <div className={`${theme === 'light' ? 'bg-white/50' : 'bg-slate-800/50'} backdrop-blur-sm rounded-xl p-4 border ${theme === 'light' ? 'border-slate-200/50' : 'border-slate-700/50'}`}>
-              <p className={`text-sm font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-3 flex items-center justify-center gap-2`}>
-                <UserCheck className="w-4 h-4" />
+            <div className={`bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20`}>
+              <p className={`text-sm font-semibold ${currentTheme.text} mb-4 flex items-center justify-center gap-2`}>
+                <UserCheck className="w-5 h-5" />
                 Default Login Credentials
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  🔑
+                </motion.div>
               </p>
-              <div className="space-y-2 text-xs">
-                <div className={`flex items-center justify-between ${theme === 'light' ? 'bg-slate-100/70' : 'bg-slate-700/30'} rounded-lg p-2`}>
-                  <div className="flex items-center gap-2">
-                    <Crown className="w-3 h-3 text-orange-400" />
-                    <span className={`font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Admin:</span>
+              <div className="space-y-3 text-xs">
+                <motion.div 
+                  whileHover={{ scale: 1.02, x: 5 }}
+                  className={`flex items-center justify-between bg-white/10 rounded-xl p-3 border border-white/20`}
+                >
+                  <div className="flex items-center gap-3">
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Crown className="w-4 h-4 text-yellow-400" />
+                    </motion.div>
+                    <span className={`font-medium ${currentTheme.text}`}>Admin:</span>
                   </div>
-                  <span className={`font-mono ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>Admin / Admin@123</span>
-                </div>
-                <div className={`flex items-center justify-between ${theme === 'light' ? 'bg-slate-100/70' : 'bg-slate-700/30'} rounded-lg p-2`}>
-                  <div className="flex items-center gap-2">
-                    <User className="w-3 h-3 text-blue-400" />
-                    <span className={`font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Cashier:</span>
+                  <span className={`font-mono ${currentTheme.text} opacity-90 bg-white/10 px-2 py-1 rounded-lg`}>Admin / Admin@123</span>
+                </motion.div>
+                <motion.div 
+                  whileHover={{ scale: 1.02, x: 5 }}
+                  className={`flex items-center justify-between bg-white/10 rounded-xl p-3 border border-white/20`}
+                >
+                  <div className="flex items-center gap-3">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <User className="w-4 h-4 text-blue-400" />
+                    </motion.div>
+                    <span className={`font-medium ${currentTheme.text}`}>Cashier:</span>
                   </div>
-                  <span className={`font-mono ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>cashier1 / cashier123</span>
-                </div>
+                  <span className={`font-mono ${currentTheme.text} opacity-90 bg-white/10 px-2 py-1 rounded-lg`}>cashier1 / cashier123</span>
+                </motion.div>
               </div>
             </div>
+
+            {/* Fun footer message */}
+            <motion.div
+              animate={{ 
+                scale: [1, 1.05, 1],
+                rotate: [0, 1, -1, 0]
+              }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className={`${currentTheme.text} opacity-70 text-sm flex items-center justify-center gap-2`}
+            >
+              Made with 
+              <motion.span
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                ❤️
+              </motion.span>
+              for Vila POS
+              <motion.span
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                ✨
+              </motion.span>
+            </motion.div>
           </motion.div>
         </div>
       </motion.div>
