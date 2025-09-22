@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronUp, ChevronDown, Search, Filter } from 'lucide-react'
 import { cn } from '../../utils/cn'
-import { LoadingTable } from './LoadingSpinner'
+import { LoadingTable } from '../common/LoadingSpinner'
 
 export const DataTable = ({
   data = [],
