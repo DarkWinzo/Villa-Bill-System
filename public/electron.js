@@ -8,10 +8,10 @@ let mainWindow
 function createWindow() {
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 900,
-    minWidth: 1200,
-    minHeight: 800,
+    width: 1600,
+    height: 1000,
+    minWidth: 1400,
+    minHeight: 900,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -19,10 +19,18 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     show: false,
-    titleBarStyle: 'default',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#1f2937',
+      symbolColor: '#ffffff'
+    },
     webSecurity: true,
-    autoHideMenuBar: false,
-    icon: path.join(__dirname, '../build/icon.ico')
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, '../build/icon.ico'),
+    frame: true,
+    resizable: true,
+    maximizable: true,
+    fullscreenable: true
   })
 
   // Load the app
@@ -34,6 +42,9 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
+    
+    // Maximize window on startup for better experience
+    mainWindow.maximize()
     
     if (isDev) {
       mainWindow.webContents.openDevTools()
@@ -54,6 +65,14 @@ function createMenu() {
       label: 'File',
       submenu: [
         {
+          label: 'New Window',
+          accelerator: 'CmdOrCtrl+N',
+          click: () => {
+            createWindow()
+          }
+        },
+        { type: 'separator' },
+        {
           label: 'Exit',
           accelerator: 'CmdOrCtrl+Q',
           click: () => {
@@ -63,12 +82,25 @@ function createMenu() {
       ]
     },
     {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'selectall' }
+      ]
+    },
+    {
       label: 'View',
       submenu: [
         { role: 'reload' },
         { role: 'forceReload' },
         { role: 'toggleDevTools' },
         { type: 'separator' },
+        { role: 'actualSize' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
         { role: 'zoomOut' },
@@ -80,7 +112,26 @@ function createMenu() {
       label: 'Window',
       submenu: [
         { role: 'minimize' },
+        { role: 'zoom' },
         { role: 'close' }
+      ]
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'About Vila POS',
+          click: () => {
+            const { dialog } = require('electron')
+            dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              title: 'About Vila POS System',
+              message: 'Vila POS System v1.0.0',
+              detail: 'A comprehensive hotel management and billing system.\n\nBuilt with Electron, React, and modern web technologies.',
+              buttons: ['OK']
+            })
+          }
+        }
       ]
     }
   ]

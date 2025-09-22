@@ -75,28 +75,37 @@ export const RoomManagement = () => {
       header: 'Room Number',
       accessor: 'room_number',
       render: (value) => (
-        <div className="font-semibold text-white">{value}</div>
+        <div className="font-bold text-white text-lg bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          #{value}
+        </div>
       )
     },
     {
       header: 'Type',
       accessor: 'room_type',
       render: (value) => (
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-          value === 'ac' 
-            ? 'bg-blue-900/30 text-blue-400 border border-blue-800' 
-            : 'bg-green-900/30 text-green-400 border border-green-800'
-        }`}>
-          {value === 'ac' ? 'AC Room' : 'Non-AC Room'}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`px-3 py-2 rounded-full text-sm font-bold shadow-lg ${
+            value === 'ac' 
+              ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' 
+              : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+          }`}>
+            {value === 'ac' ? '❄️ AC Room' : '🌿 Non-AC Room'}
+          </span>
+        </div>
       )
     },
     {
       header: 'Price/Day',
       accessor: 'price_per_day',
       render: (value) => (
-        <div className="font-semibold text-primary-400">
-          {formatCurrency(value)}
+        <div className="text-right">
+          <div className="font-bold text-xl text-green-400 mb-1">
+            {formatCurrency(value)}
+          </div>
+          <div className="text-xs text-gray-400">
+            per day
+          </div>
         </div>
       )
     },
@@ -104,9 +113,26 @@ export const RoomManagement = () => {
       header: 'Description',
       accessor: 'description',
       render: (value) => (
-        <div className="text-slate-300 max-w-xs truncate">
-          {value || 'No description'}
+        <div className="max-w-xs">
+          <div className="text-slate-300 text-sm leading-relaxed">
+            {value || (
+              <span className="text-gray-500 italic">No description available</span>
+            )}
+          </div>
         </div>
+      )
+    },
+    {
+      header: 'Status',
+      accessor: 'is_active',
+      render: (value) => (
+        <span className={`px-3 py-2 rounded-full text-sm font-bold shadow-lg ${
+          value === 'ac' 
+            ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' 
+            : 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
+        }`}>
+          ✅ Available
+        </span>
       )
     },
     {
@@ -156,15 +182,15 @@ export const RoomManagement = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card"
+          className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm"
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-600/20 rounded-lg">
-              <Hotel className="w-6 h-6 text-blue-400" />
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg">
+              <Hotel className="w-8 h-8 text-white" />
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Total Rooms</p>
-              <p className="text-2xl font-bold text-white">{rooms.length}</p>
+              <p className="text-blue-300 text-sm font-semibold">Total Rooms</p>
+              <p className="text-3xl font-bold text-white">{rooms.length}</p>
             </div>
           </div>
         </motion.div>
@@ -173,15 +199,15 @@ export const RoomManagement = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="card"
+          className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm"
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-600/20 rounded-lg">
-              <Hotel className="w-6 h-6 text-blue-400" />
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg">
+              <span className="text-2xl">❄️</span>
             </div>
             <div>
-              <p className="text-slate-400 text-sm">AC Rooms</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-blue-300 text-sm font-semibold">AC Rooms</p>
+              <p className="text-3xl font-bold text-white">
                 {rooms.filter(r => r.room_type === 'ac').length}
               </p>
             </div>
@@ -192,15 +218,15 @@ export const RoomManagement = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="card"
+          className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-2xl p-6 backdrop-blur-sm"
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-600/20 rounded-lg">
-              <Hotel className="w-6 h-6 text-green-400" />
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg">
+              <span className="text-2xl">🌿</span>
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Non-AC Rooms</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-green-300 text-sm font-semibold">Non-AC Rooms</p>
+              <p className="text-3xl font-bold text-white">
                 {rooms.filter(r => r.room_type === 'non_ac').length}
               </p>
             </div>
@@ -256,8 +282,8 @@ export const RoomManagement = () => {
                 className="input-field"
               >
                 <option value="">Select Type</option>
-                <option value="ac">AC Room</option>
-                <option value="non_ac">Non-AC Room</option>
+                <option value="ac">❄️ AC Room</option>
+                <option value="non_ac">🌿 Non-AC Room</option>
               </select>
               {errors.room_type && (
                 <p className="mt-1 text-sm text-red-400">{errors.room_type.message}</p>

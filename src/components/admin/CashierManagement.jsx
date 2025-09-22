@@ -60,27 +60,15 @@ export const CashierManagement = () => {
     e.preventDefault()
     try {
       if (selectedCashier) {
-        // Update existing cashier
-        const updatedCashiers = cashiers.map(cashier =>
-          cashier.id === selectedCashier.id
-            ? { ...cashier, ...formData }
-            : cashier
-        )
-        setCashiers(updatedCashiers)
+        await updateCashier(selectedCashier.id, formData)
       } else {
-        // Add new cashier
-        const newCashier = {
-          id: Date.now(),
-          ...formData,
-          createdAt: new Date().toISOString().split('T')[0],
-          lastLogin: null
-        }
-        setCashiers([...cashiers, newCashier])
+        await addCashier(formData)
       }
       
       setShowModal(false)
       setSelectedCashier(null)
       setFormData({ name: '', email: '', password: '', isActive: true })
+      fetchCashiers() // Refresh the list
     } catch (error) {
       console.error('Error saving cashier:', error)
     }
@@ -89,7 +77,8 @@ export const CashierManagement = () => {
   const handleEdit = (cashier) => {
     setSelectedCashier(cashier)
     setFormData({
-      name: cashier.name,
+      username: cashier.username,
+      full_name: cashier.full_name || cashier.username,
       email: cashier.email,
       password: '',
       isActive: cashier.isActive
@@ -99,32 +88,47 @@ export const CashierManagement = () => {
 
   const handleDelete = async (cashierId) => {
     if (window.confirm('Are you sure you want to delete this cashier?')) {
-      setCashiers(cashiers.filter(cashier => cashier.id !== cashierId))
+      try {
+        await deleteCashier(cashierId)
+        fetchCashiers() // Refresh the list
+      } catch (error) {
+        console.error('Error deleting cashier:', error)
+      }
     }
   }
 
   const toggleStatus = async (cashierId) => {
-    const updatedCashiers = cashiers.map(cashier =>
-      cashier.id === cashierId
-        ? { ...cashier, isActive: !cashier.isActive }
-        : cashier
-    )
-    setCashiers(updatedCashiers)
+    try {
+      const cashier = cashiers.find(c => c.id === cashierId)
+      if (cashier) {
+        await updateCashier(cashierId, { ...cashier, isActive: !cashier.isActive })
+        loadCashiers() // Refresh the list
+      }
+    } catch (error) {
+      console.error('Error updating cashier status:', error)
+    }
   }
 
   const columns = [
     {
-      header: 'Name',
-      accessor: 'name',
+      header: 'Username',
+      accessor: 'username',
       render: (value) => (
         <div className="font-medium text-white">{value}</div>
+      )
+    },
+    {
+      header: 'Full Name',
+      accessor: 'full_name',
+      render: (value) => (
+        <div className="text-slate-300">{value || 'N/A'}</div>
       )
     },
     {
       header: 'Email',
       accessor: 'email',
       render: (value) => (
-        <div className="text-slate-300">{value}</div>
+        <div className="text-slate-300">{value || 'N/A'}</div>
       )
     },
     {
@@ -289,12 +293,25 @@ export const CashierManagement = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Name
+              Username
             </label>
             <input
               type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              className="input-field"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={formData.full_name}
+              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
               className="input-field"
               required
             />

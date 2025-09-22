@@ -71,7 +71,7 @@ class CashierService {
           const allUsers = users ? JSON.parse(users) : []
           
           // Check if username already exists (excluding current user)
-          if (allUsers.some(u => u.username === cashierData.username && u.id !== id)) {
+          if (allUsers.some(u => u.username.toLowerCase() === cashierData.username.toLowerCase() && u.id !== id)) {
             reject(new Error('Username already exists'))
             return
           }

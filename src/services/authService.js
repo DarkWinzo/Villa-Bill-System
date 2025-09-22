@@ -49,7 +49,7 @@ class AuthService {
       setTimeout(() => {
         const users = this.getStoredUsers()
         const user = users.find(u => 
-          u.username === credentials.username && 
+          u.username.toLowerCase() === credentials.username.toLowerCase() && 
           u.password === credentials.password
         )
 
@@ -59,7 +59,8 @@ class AuthService {
             user: {
               id: user.id,
               username: user.username,
-              role: user.role
+              role: user.role,
+              full_name: user.full_name || user.username
             }
           })
         } else {
@@ -68,7 +69,7 @@ class AuthService {
             message: 'Invalid username or password'
           })
         }
-      }, 1000) // Simulate network delay
+      }, 800) // Reduced delay for better UX
     })
   }
 

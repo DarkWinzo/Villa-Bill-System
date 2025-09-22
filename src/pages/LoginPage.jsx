@@ -13,23 +13,32 @@ import {
   Eye, 
   EyeOff, 
   Shield, 
-  Sparkles,
   CheckCircle,
   AlertCircle,
   Hotel,
-  ArrowRight
+  ArrowRight,
+  Crown,
+  UserCheck
 } from 'lucide-react'
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
-  const [isFormFocused, setIsFormFocused] = useState(false)
   const [loginAttempts, setLoginAttempts] = useState(0)
   const [isBlocked, setIsBlocked] = useState(false)
   const [blockTimeLeft, setBlockTimeLeft] = useState(0)
+  const [currentTime, setCurrentTime] = useState(new Date())
   
   const { login, isLoading, error } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
+
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   const {
     register,
@@ -40,7 +49,7 @@ const LoginPage = () => {
     watch
   } = useForm({
     resolver: yupResolver(loginSchema),
-    mode: 'onChange'
+    mode: 'onBlur'
   })
 
   const watchedUsername = watch('username')
@@ -113,45 +122,47 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
 
       {/* Main login container */}
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ 
-          duration: 0.6,
+          duration: 0.8,
           type: "spring",
-          stiffness: 100,
-          damping: 15
+          stiffness: 80,
+          damping: 20
         }}
-        className="relative z-10 w-full max-w-md"
+        className="relative z-10 w-full max-w-lg"
       >
         {/* Glass morphism card */}
-        <div className={`
-          bg-gray-800 border border-gray-700 rounded-lg p-8 shadow-lg
-          transition-all duration-300 ease-out
-          ${isFormFocused ? 'border-blue-500' : ''}
-        `}>
+        <div className="bg-gray-800/90 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8 shadow-2xl">
           {/* Header section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
             className="text-center mb-8"
           >
             <motion.div
-              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileHover={{ scale: 1.1, rotate: 10 }}
               whileTap={{ scale: 0.95 }}
-              className="mx-auto w-20 h-20 bg-blue-600 rounded-lg flex items-center justify-center mb-6 shadow-lg"
+              className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-2xl"
             >
-              <Hotel className="w-10 h-10 text-white" />
+              <Hotel className="w-12 h-12 text-white drop-shadow-lg" />
             </motion.div>
             
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-3xl font-bold text-gray-100 mb-2"
+              transition={{ delay: 0.4 }}
+              className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-3"
             >
               Vila POS System
             </motion.h1>
@@ -159,12 +170,29 @@ const LoginPage = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-gray-400 flex items-center justify-center gap-2"
+              transition={{ delay: 0.5 }}
+              className="text-gray-400 flex items-center justify-center gap-2 mb-2"
             >
               <Shield className="w-4 h-4" />
               Secure Hotel Management
             </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-sm text-gray-500"
+            >
+              {currentTime.toLocaleString('en-LK', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })}
+            </motion.div>
           </motion.div>
 
           {/* Security warning for blocked users */}
@@ -174,13 +202,13 @@ const LoginPage = () => {
                 initial={{ opacity: 0, scale: 0.9, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                className="mb-6 p-4 bg-red-800 border border-red-700 rounded-lg"
+                className="mb-6 p-4 bg-red-900/50 border border-red-700/50 rounded-xl backdrop-blur-sm"
               >
                 <div className="flex items-center gap-3">
                   <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
                   <div>
-                    <p className="text-red-200 font-medium text-sm">Account Temporarily Locked</p>
-                    <p className="text-red-300 text-xs">
+                    <p className="text-red-200 font-semibold text-sm">Account Temporarily Locked</p>
+                    <p className="text-red-300 text-sm">
                       Too many failed attempts. Try again in {formatTime(blockTimeLeft)}
                     </p>
                   </div>
@@ -192,47 +220,39 @@ const LoginPage = () => {
           {/* Login form */}
           <form 
             onSubmit={handleSubmit(onSubmit)} 
-            className="space-y-6"
-            onFocus={() => setIsFormFocused(true)}
-            onBlur={() => setIsFormFocused(false)}
+            className="space-y-7"
           >
             {/* Username field */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
+              transition={{ delay: 0.7, duration: 0.6 }}
             >
-              <label htmlFor="username" className="block text-sm font-semibold text-white/90 mb-3">
+              <label htmlFor="username" className="block text-sm font-bold text-white mb-3 flex items-center gap-2">
+                <User className="w-4 h-4" />
                 Username
               </label>
               <div className="relative group">
-                <div className={`
-                  absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-200
-                  ${getFieldStatus('username') === 'error' ? 'text-red-400' : 
-                    getFieldStatus('username') === 'success' ? 'text-green-400' : 'text-gray-400'}
-                `}>
-                  <User className="w-5 h-5" />
-                </div>
-                
                 <input
                   {...register('username')}
                   type="text"
                   id="username"
                   disabled={isBlocked}
                   className={`
-                    w-full pl-12 pr-12 py-3 bg-gray-700 border rounded-lg
-                    text-gray-100 placeholder-gray-400 font-medium
-                    focus:outline-none focus:ring-2 focus:bg-gray-600
-                    transition-all duration-200 ease-out
+                    w-full px-4 py-4 bg-gray-700/50 backdrop-blur-sm border rounded-xl
+                    text-gray-100 placeholder-gray-400 font-medium text-lg
+                    focus:outline-none focus:ring-2 focus:bg-gray-600/50
+                    transition-all duration-300 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
+                    hover:bg-gray-600/30
                     ${getFieldStatus('username') === 'error' 
-                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                      ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' 
                       : getFieldStatus('username') === 'success'
-                      ? 'border-green-500 focus:ring-green-500 focus:border-green-500'
-                      : 'border-gray-600 focus:ring-blue-500 focus:border-blue-500'
+                      ? 'border-green-500/50 focus:ring-green-500/50 focus:border-green-500'
+                      : 'border-gray-600/50 focus:ring-blue-500/50 focus:border-blue-500'
                     }
                   `}
-                  placeholder="Enter your username"
+                  placeholder="Enter username"
                 />
                 
                 {/* Field status indicator */}
@@ -242,7 +262,7 @@ const LoginPage = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10"
                     >
                       {getFieldStatus('username') === 'success' ? (
                         <CheckCircle className="w-5 h-5 text-green-400" />
@@ -260,7 +280,7 @@ const LoginPage = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="mt-2 text-sm text-red-400 flex items-center gap-2"
+                    className="mt-3 text-sm text-red-400 flex items-center gap-2 bg-red-900/20 p-2 rounded-lg"
                   >
                     <AlertCircle className="w-4 h-4" />
                     {errors.username.message}
@@ -273,39 +293,33 @@ const LoginPage = () => {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
             >
-              <label htmlFor="password" className="block text-sm font-semibold text-white/90 mb-3">
+              <label htmlFor="password" className="block text-sm font-bold text-white mb-3 flex items-center gap-2">
+                <Lock className="w-4 h-4" />
                 Password
               </label>
               <div className="relative group">
-                <div className={`
-                  absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-200
-                  ${getFieldStatus('password') === 'error' ? 'text-red-400' : 
-                    getFieldStatus('password') === 'success' ? 'text-green-400' : 'text-gray-400'}
-                `}>
-                  <Lock className="w-5 h-5" />
-                </div>
-                
                 <input
                   {...register('password')}
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   disabled={isBlocked}
                   className={`
-                    w-full pl-12 pr-16 py-3 bg-gray-700 border rounded-lg
-                    text-gray-100 placeholder-gray-400 font-medium
-                    focus:outline-none focus:ring-2 focus:bg-gray-600
-                    transition-all duration-200 ease-out
+                    w-full px-4 pr-16 py-4 bg-gray-700/50 backdrop-blur-sm border rounded-xl
+                    text-gray-100 placeholder-gray-400 font-medium text-lg
+                    focus:outline-none focus:ring-2 focus:bg-gray-600/50
+                    transition-all duration-300 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
+                    hover:bg-gray-600/30
                     ${getFieldStatus('password') === 'error' 
-                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                      ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' 
                       : getFieldStatus('password') === 'success'
-                      ? 'border-green-500 focus:ring-green-500 focus:border-green-500'
-                      : 'border-gray-600 focus:ring-blue-500 focus:border-blue-500'
+                      ? 'border-green-500/50 focus:ring-green-500/50 focus:border-green-500'
+                      : 'border-gray-600/50 focus:ring-blue-500/50 focus:border-blue-500'
                     }
                   `}
-                  placeholder="Enter your password"
+                  placeholder="Enter password"
                 />
                 
                 {/* Password visibility toggle */}
@@ -315,7 +329,7 @@ const LoginPage = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isBlocked}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200 disabled:opacity-50"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-all duration-300 disabled:opacity-50 hover:scale-110 z-10"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </motion.button>
@@ -327,7 +341,7 @@ const LoginPage = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      className="absolute right-12 top-1/2 transform -translate-y-1/2"
+                      className="absolute right-12 top-1/2 transform -translate-y-1/2 z-10"
                     >
                       {getFieldStatus('password') === 'success' ? (
                         <CheckCircle className="w-5 h-5 text-green-400" />
@@ -345,7 +359,7 @@ const LoginPage = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="mt-2 text-sm text-red-400 flex items-center gap-2"
+                    className="mt-3 text-sm text-red-400 flex items-center gap-2 bg-red-900/20 p-2 rounded-lg"
                   >
                     <AlertCircle className="w-4 h-4" />
                     {errors.password.message}
@@ -361,9 +375,9 @@ const LoginPage = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="p-3 bg-yellow-800 border border-yellow-700 rounded-lg"
+                  className="p-4 bg-yellow-900/50 border border-yellow-700/50 rounded-xl backdrop-blur-sm"
                 >
-                  <p className="text-yellow-200 text-sm flex items-center gap-2">
+                  <p className="text-yellow-200 text-sm flex items-center gap-2 font-medium">
                     <AlertCircle className="w-4 h-4" />
                     {loginAttempts} failed attempt{loginAttempts > 1 ? 's' : ''}. 
                     {5 - loginAttempts} attempt{5 - loginAttempts > 1 ? 's' : ''} remaining.
@@ -379,9 +393,9 @@ const LoginPage = () => {
                   initial={{ opacity: 0, scale: 0.9, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                  className="p-4 bg-red-800 border border-red-700 rounded-lg"
+                  className="p-4 bg-red-900/50 border border-red-700/50 rounded-xl backdrop-blur-sm"
                 >
-                  <p className="text-red-200 text-sm flex items-center gap-2">
+                  <p className="text-red-200 text-sm flex items-center gap-2 font-medium">
                     <AlertCircle className="w-4 h-4" />
                     {errors.root.message}
                   </p>
@@ -393,28 +407,29 @@ const LoginPage = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.5 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
             >
               <motion.button
-                whileHover={{ scale: isBlocked ? 1 : 1.02 }}
+                whileHover={{ scale: isBlocked ? 1 : 1.05 }}
                 whileTap={{ scale: isBlocked ? 1 : 0.98 }}
                 type="submit"
                 disabled={isLoading || isBlocked || !isValid}
                 className={`
-                  w-full py-4 px-6 rounded-xl font-semibold text-white
-                  transition-all duration-200 ease-out
+                  w-full py-5 px-6 rounded-2xl font-bold text-white text-lg
+                  transition-all duration-300 ease-out
                   flex items-center justify-center gap-3
                   disabled:opacity-50 disabled:cursor-not-allowed
+                  shadow-2xl
                   ${isBlocked 
-                    ? 'bg-gray-600' 
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    ? 'bg-gray-600/50' 
+                    : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-blue-500/25'
                   }
                 `}
               >
                 {isLoading ? (
                   <>
                     <LoadingSpinner size="sm" color="white" />
-                    <span>Signing In...</span>
+                    <span>Authenticating...</span>
                   </>
                 ) : isBlocked ? (
                   <>
@@ -436,17 +451,35 @@ const LoginPage = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="mt-8 text-center space-y-4"
+            transition={{ delay: 1.0, duration: 0.6 }}
+            className="mt-8 text-center space-y-6"
           >
-            <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
-              <span className="text-gray-400">Powered by Advanced Security</span>
+            <div className="flex items-center justify-center gap-2 text-white/60 text-sm font-medium">
+              <Shield className="w-4 h-4" />
+              <span className="text-gray-400">Enterprise-Grade Security</span>
             </div>
             
-            <div className="text-xs text-gray-500">
-              <p>Default Credentials:</p>
-              <p>Admin: Admin / Admin@123</p>
-              <p>Cashier: cashier1 / cashier123</p>
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50">
+              <p className="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-center gap-2">
+                <UserCheck className="w-4 h-4" />
+                Default Login Credentials
+              </p>
+              <div className="space-y-2 text-xs text-gray-400">
+                <div className="flex items-center justify-between bg-gray-700/30 rounded-lg p-2">
+                  <div className="flex items-center gap-2">
+                    <Crown className="w-3 h-3 text-orange-400" />
+                    <span className="font-medium">Admin:</span>
+                  </div>
+                  <span className="font-mono">Admin / Admin@123</span>
+                </div>
+                <div className="flex items-center justify-between bg-gray-700/30 rounded-lg p-2">
+                  <div className="flex items-center gap-2">
+                    <User className="w-3 h-3 text-blue-400" />
+                    <span className="font-medium">Cashier:</span>
+                  </div>
+                  <span className="font-mono">cashier1 / cashier123</span>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
