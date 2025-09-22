@@ -29,10 +29,10 @@
     }
   },
   "devDependencies": {
-    "electron": "^latest",
-    "electron-builder": "^latest"
+    "electron": "latest",
+    "electron-builder": "latest"
   },
   "dependencies": {
-    "sqlite3": "^latest"
+    "sqlite3": "latest"
   }
 }
