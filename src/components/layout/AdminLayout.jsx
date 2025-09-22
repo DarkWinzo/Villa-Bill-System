@@ -53,15 +53,15 @@ export const AdminLayout = ({ children }) => {
       <div className="relative">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30">
-          <div className="flex flex-col flex-grow glass-card border-r border-white/20 overflow-y-auto animated-bg">
+          <div className="flex flex-col flex-grow bg-gray-800 border-r border-gray-700 overflow-y-auto">
             {/* Logo */}
-            <div className="flex items-center gap-3 px-6 py-6 border-b border-white/20 flex-shrink-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-700 flex-shrink-0">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Hotel className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold gradient-text">Vila POS</h1>
-                <p className="text-xs text-white/70">Admin Panel</p>
+                <h1 className="text-lg font-bold text-gray-100">Vila POS</h1>
+                <p className="text-xs text-gray-400">Admin Panel</p>
               </div>
             </div>
 
@@ -74,10 +74,10 @@ export const AdminLayout = ({ children }) => {
                     key={item.name}
                     to={item.href}
                     className={cn(
-                      'flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-300',
+                      'flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors duration-200',
                       isActive
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/30 scale-105'
-                        : 'text-white/70 hover:text-white hover:bg-white/10 hover:scale-105'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-300 hover:text-white hover:bg-gray-700'
                     )}
                   >
                     <item.icon className="w-5 h-5" />
@@ -88,20 +88,20 @@ export const AdminLayout = ({ children }) => {
             </nav>
 
             {/* User info */}
-            <div className="p-4 border-t border-white/20 flex-shrink-0">
+            <div className="p-4 border-t border-gray-700 flex-shrink-0">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
                   <Crown className="w-5 h-5 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium text-white truncate">{user?.username}</p>
-                  <p className="text-xs text-white/70">Administrator</p>
+                  <p className="font-medium text-gray-100 truncate">{user?.username}</p>
+                  <p className="text-xs text-gray-400">Administrator</p>
                 </div>
               </div>
               
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 hover:scale-105"
+                className="w-full flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out
@@ -118,24 +118,23 @@ export const AdminLayout = ({ children }) => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto md:hidden"
-              className="fixed inset-y-0 left-0 z-50 w-64 glass-card border-r border-white/20 overflow-y-auto md:hidden animated-bg"
+              className="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-gray-700 overflow-y-auto md:hidden"
             >
               <div className="flex h-full flex-col">
                 {/* Logo with close button */}
-                <div className="flex items-center justify-between px-6 py-6 border-b border-white/20">
+                <div className="flex items-center justify-between px-6 py-6 border-b border-gray-700">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                       <Hotel className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h1 className="text-lg font-bold gradient-text">Vila POS</h1>
-                      <p className="text-xs text-white/70">Admin Panel</p>
+                      <h1 className="text-lg font-bold text-gray-100">Vila POS</h1>
+                      <p className="text-xs text-gray-400">Admin Panel</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300"
+                    className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -151,10 +150,10 @@ export const AdminLayout = ({ children }) => {
                         to={item.href}
                         onClick={() => setSidebarOpen(false)}
                         className={cn(
-                          'flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-300',
+                          'flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors duration-200',
                           isActive
-                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/30 scale-105'
-                            : 'text-white/70 hover:text-white hover:bg-white/10 hover:scale-105'
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-300 hover:text-white hover:bg-gray-700'
                         )}
                       >
                         <item.icon className="w-5 h-5" />
@@ -165,20 +164,20 @@ export const AdminLayout = ({ children }) => {
                 </nav>
 
                 {/* User info */}
-                <div className="p-4 border-t border-white/20">
+                <div className="p-4 border-t border-gray-700">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center">
                       <Crown className="w-5 h-5 text-white" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-medium text-white truncate">{user?.username}</p>
-                      <p className="text-xs text-white/70">Administrator</p>
+                      <p className="font-medium text-gray-100 truncate">{user?.username}</p>
+                      <p className="text-xs text-gray-400">Administrator</p>
                     </div>
                   </div>
                   
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 hover:scale-105"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200"
                   >
                     <LogOut className="w-4 h-4" />
                     Sign Out
@@ -193,11 +192,11 @@ export const AdminLayout = ({ children }) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 md:pl-64">
         {/* Top bar */}
-        <header className="glass-card border-b border-white/20 px-4 sm:px-6 py-4 flex-shrink-0">
+        <header className="bg-gray-800 border-b border-gray-700 px-4 sm:px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 md:hidden"
+              className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200 md:hidden"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -207,7 +206,7 @@ export const AdminLayout = ({ children }) => {
                 <p className="text-sm font-medium text-white">
                   Welcome back, {user?.username}
                 </p>
-                <p className="text-xs text-white/70">
+                <p className="text-xs text-gray-400">
                   {new Date().toLocaleDateString('en-LK', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -221,7 +220,7 @@ export const AdminLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 overflow-y-auto animated-bg">
+        <main className="flex-1 p-4 sm:p-6 overflow-y-auto bg-gray-900">
           {children}
         </main>
       </div>

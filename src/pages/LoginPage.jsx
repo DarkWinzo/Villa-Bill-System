@@ -112,46 +112,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [360, 180, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            y: [-20, 20, -20],
-            x: [-10, 10, -10],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl"
-        />
-      </div>
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
 
       {/* Main login container */}
       <motion.div
@@ -167,9 +128,9 @@ const LoginPage = () => {
       >
         {/* Glass morphism card */}
         <div className={`
-          bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl
-          transition-all duration-500 ease-out
-          ${isFormFocused ? 'bg-white/15 border-purple-400/30 shadow-purple-500/20' : ''}
+          bg-gray-800 border border-gray-700 rounded-lg p-8 shadow-lg
+          transition-all duration-300 ease-out
+          ${isFormFocused ? 'border-blue-500' : ''}
         `}>
           {/* Header section */}
           <motion.div
@@ -181,7 +142,7 @@ const LoginPage = () => {
             <motion.div
               whileHover={{ scale: 1.05, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="mx-auto w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-500/25"
+              className="mx-auto w-20 h-20 bg-blue-600 rounded-lg flex items-center justify-center mb-6 shadow-lg"
             >
               <Hotel className="w-10 h-10 text-white" />
             </motion.div>
@@ -190,7 +151,7 @@ const LoginPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent mb-2"
+              className="text-3xl font-bold text-gray-100 mb-2"
             >
               Vila POS System
             </motion.h1>
@@ -199,7 +160,7 @@ const LoginPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-white/70 flex items-center justify-center gap-2"
+              className="text-gray-400 flex items-center justify-center gap-2"
             >
               <Shield className="w-4 h-4" />
               Secure Hotel Management
@@ -213,13 +174,13 @@ const LoginPage = () => {
                 initial={{ opacity: 0, scale: 0.9, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                className="mb-6 p-4 bg-red-500/20 border border-red-400/30 rounded-xl backdrop-blur-sm"
+                className="mb-6 p-4 bg-red-800 border border-red-700 rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
                   <div>
                     <p className="text-red-200 font-medium text-sm">Account Temporarily Locked</p>
-                    <p className="text-red-300/80 text-xs">
+                    <p className="text-red-300 text-xs">
                       Too many failed attempts. Try again in {formatTime(blockTimeLeft)}
                     </p>
                   </div>
@@ -248,7 +209,7 @@ const LoginPage = () => {
                 <div className={`
                   absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-200
                   ${getFieldStatus('username') === 'error' ? 'text-red-400' : 
-                    getFieldStatus('username') === 'success' ? 'text-green-400' : 'text-white/50'}
+                    getFieldStatus('username') === 'success' ? 'text-green-400' : 'text-gray-400'}
                 `}>
                   <User className="w-5 h-5" />
                 </div>
@@ -259,16 +220,16 @@ const LoginPage = () => {
                   id="username"
                   disabled={isBlocked}
                   className={`
-                    w-full pl-12 pr-12 py-4 bg-white/10 backdrop-blur-sm border rounded-xl
-                    text-white placeholder-white/50 font-medium
-                    focus:outline-none focus:ring-2 focus:bg-white/15
-                    transition-all duration-300 ease-out
+                    w-full pl-12 pr-12 py-3 bg-gray-700 border rounded-lg
+                    text-gray-100 placeholder-gray-400 font-medium
+                    focus:outline-none focus:ring-2 focus:bg-gray-600
+                    transition-all duration-200 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${getFieldStatus('username') === 'error' 
-                      ? 'border-red-400/50 focus:ring-red-400/50 focus:border-red-400' 
+                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                       : getFieldStatus('username') === 'success'
-                      ? 'border-green-400/50 focus:ring-green-400/50 focus:border-green-400'
-                      : 'border-white/20 focus:ring-purple-400/50 focus:border-purple-400/50'
+                      ? 'border-green-500 focus:ring-green-500 focus:border-green-500'
+                      : 'border-gray-600 focus:ring-blue-500 focus:border-blue-500'
                     }
                   `}
                   placeholder="Enter your username"
@@ -321,7 +282,7 @@ const LoginPage = () => {
                 <div className={`
                   absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-200
                   ${getFieldStatus('password') === 'error' ? 'text-red-400' : 
-                    getFieldStatus('password') === 'success' ? 'text-green-400' : 'text-white/50'}
+                    getFieldStatus('password') === 'success' ? 'text-green-400' : 'text-gray-400'}
                 `}>
                   <Lock className="w-5 h-5" />
                 </div>
@@ -332,16 +293,16 @@ const LoginPage = () => {
                   id="password"
                   disabled={isBlocked}
                   className={`
-                    w-full pl-12 pr-16 py-4 bg-white/10 backdrop-blur-sm border rounded-xl
-                    text-white placeholder-white/50 font-medium
-                    focus:outline-none focus:ring-2 focus:bg-white/15
-                    transition-all duration-300 ease-out
+                    w-full pl-12 pr-16 py-3 bg-gray-700 border rounded-lg
+                    text-gray-100 placeholder-gray-400 font-medium
+                    focus:outline-none focus:ring-2 focus:bg-gray-600
+                    transition-all duration-200 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${getFieldStatus('password') === 'error' 
-                      ? 'border-red-400/50 focus:ring-red-400/50 focus:border-red-400' 
+                      ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                       : getFieldStatus('password') === 'success'
-                      ? 'border-green-400/50 focus:ring-green-400/50 focus:border-green-400'
-                      : 'border-white/20 focus:ring-purple-400/50 focus:border-purple-400/50'
+                      ? 'border-green-500 focus:ring-green-500 focus:border-green-500'
+                      : 'border-gray-600 focus:ring-blue-500 focus:border-blue-500'
                     }
                   `}
                   placeholder="Enter your password"
@@ -354,7 +315,7 @@ const LoginPage = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isBlocked}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors duration-200 disabled:opacity-50"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200 disabled:opacity-50"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </motion.button>
@@ -400,7 +361,7 @@ const LoginPage = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="p-3 bg-yellow-500/20 border border-yellow-400/30 rounded-lg backdrop-blur-sm"
+                  className="p-3 bg-yellow-800 border border-yellow-700 rounded-lg"
                 >
                   <p className="text-yellow-200 text-sm flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
@@ -418,7 +379,7 @@ const LoginPage = () => {
                   initial={{ opacity: 0, scale: 0.9, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                  className="p-4 bg-red-500/20 border border-red-400/30 rounded-xl backdrop-blur-sm"
+                  className="p-4 bg-red-800 border border-red-700 rounded-lg"
                 >
                   <p className="text-red-200 text-sm flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
@@ -441,12 +402,12 @@ const LoginPage = () => {
                 disabled={isLoading || isBlocked || !isValid}
                 className={`
                   w-full py-4 px-6 rounded-xl font-semibold text-white
-                  transition-all duration-300 ease-out
+                  transition-all duration-200 ease-out
                   flex items-center justify-center gap-3
                   disabled:opacity-50 disabled:cursor-not-allowed
                   ${isBlocked 
-                    ? 'bg-gray-600/50' 
-                    : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40'
+                    ? 'bg-gray-600' 
+                    : 'bg-blue-600 hover:bg-blue-700'
                   }
                 `}
               >
@@ -479,11 +440,10 @@ const LoginPage = () => {
             className="mt-8 text-center space-y-4"
           >
             <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
-              <Sparkles className="w-4 h-4" />
-              <span>Powered by Advanced Security</span>
+              <span className="text-gray-400">Powered by Advanced Security</span>
             </div>
             
-            <div className="text-xs text-white/40">
+            <div className="text-xs text-gray-500">
               <p>Default Credentials:</p>
               <p>Admin: Admin / Admin@123</p>
               <p>Cashier: cashier1 / cashier123</p>
