@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast'
+import React from 'react'
 
 // Error types
 export const ERROR_TYPES = {

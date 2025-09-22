@@ -1,6 +1,6 @@
 import React from 'react'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
-import { logError } from '../../utils/errorHandler'
+import { logError } from '../../utils/errorHandler.jsx'
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
