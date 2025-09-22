@@ -35,7 +35,7 @@ export const AdminLayout = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-dark-950">
+    <div className="min-h-screen bg-dark-950 flex flex-col lg:flex-row">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
@@ -45,15 +45,16 @@ export const AdminLayout = ({ children }) => {
       )}
 
       {/* Sidebar */}
-      <motion.div
-        initial={false}
-        animate={{ x: sidebarOpen ? 0 : '-100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto',
-          'lg:translate-x-0 lg:static lg:inset-0'
-        )}
-      >
+      <div className="lg:w-64 lg:flex-shrink-0">
+        <motion.div
+          initial={false}
+          animate={{ x: sidebarOpen ? 0 : '-100%' }}
+          transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+          className={cn(
+            'fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto',
+            'lg:relative lg:translate-x-0 lg:z-auto'
+          )}
+        >
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 py-6 border-b border-dark-700/50">
@@ -110,12 +111,13 @@ export const AdminLayout = ({ children }) => {
             </button>
           </div>
         </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="bg-dark-900/50 backdrop-blur-xl border-b border-dark-700/50 px-4 py-4 lg:px-8">
+        <header className="bg-dark-900/50 backdrop-blur-xl border-b border-dark-700/50 px-4 py-4 lg:px-8 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -143,7 +145,7 @@ export const AdminLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="p-4 sm:p-6 lg:p-8 min-h-0 flex-1 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           {children}
         </main>
       </div>

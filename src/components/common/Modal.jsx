@@ -56,7 +56,7 @@ export const Modal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -73,16 +73,16 @@ export const Modal = ({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', duration: 0.3 }}
             className={cn(
-              'relative w-full bg-dark-900/95 backdrop-blur-xl border border-dark-700/50 rounded-2xl shadow-2xl',
+              'relative w-full bg-dark-900/95 backdrop-blur-xl border border-dark-700/50 rounded-xl sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto',
               sizeClasses[size],
               className
             )}
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-6 border-b border-dark-700/50">
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-dark-700/50 flex-shrink-0">
                 {title && (
-                  <h2 className="text-xl font-semibold text-white">
+                  <h2 className="text-lg sm:text-xl font-semibold text-white">
                     {title}
                   </h2>
                 )}
@@ -98,7 +98,7 @@ export const Modal = ({
             )}
 
             {/* Content */}
-            <div className="p-6">
+            <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
               {children}
             </div>
           </motion.div>
