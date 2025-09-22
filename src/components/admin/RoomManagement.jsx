@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Wifi, WifiOff } from 'lucide-react';
 import { DataTable } from '../common/DataTable';
-import Modal from '../common/Modal';
+import { Modal } from '../common/Modal';
 import { useRoomStore } from '../../stores/roomStore';
 
 const RoomManagement = () => {
