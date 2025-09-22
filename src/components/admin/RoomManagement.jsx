@@ -1,214 +1,330 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronUp, ChevronDown, Search, Filter } from 'lucide-react'
-import { cn } from '../../utils/cn'
-import { LoadingTable } from '../common/LoadingSpinner'
+import { Hotel, Plus, Edit, Trash2, Search, Filter } from 'lucide-react'
+import { useRoomStore } from '../../stores/roomStore'
+import { DataTable } from '../common/DataTable'
+import { Modal } from '../common/Modal'
+import { LoadingSpinner } from '../common/LoadingSpinner'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { roomSchema } from '../../utils/validation'
+import { formatCurrency } from '../../utils/currency'
 
-export const RoomManagement = ({
-  data = [],
-  columns = [],
-  isLoading = false,
-  searchable = true,
-  sortable = true,
-  filterable = false,
-  pagination = true,
-  pageSize = 10,
-  className = '',
-  emptyMessage = 'No data available'
-}) => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
-  const [currentPage, setCurrentPage] = useState(1)
+export const RoomManagement = () => {
+  const [selectedRoom, setSelectedRoom] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  
+  const { rooms, isLoading, fetchRooms, addRoom, updateRoom, deleteRoom } = useRoomStore()
 
-  // Filter and search data
-  const filteredData = useMemo(() => {
-    if (!searchTerm) return data
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue
+  } = useForm({
+    resolver: yupResolver(roomSchema)
+  })
 
-    return data.filter(item =>
-      columns.some(column => {
-        const value = column.accessor ? item[column.accessor] : ''
-        return String(value).toLowerCase().includes(searchTerm.toLowerCase())
-      })
-    )
-  }, [data, searchTerm, columns])
+  useEffect(() => {
+    fetchRooms()
+  }, [fetchRooms])
 
-  // Sort data
-  const sortedData = useMemo(() => {
-    if (!sortConfig.key) return filteredData
+  const handleAddRoom = () => {
+    setSelectedRoom(null)
+    reset()
+    setShowModal(true)
+  }
 
-    return [...filteredData].sort((a, b) => {
-      const aValue = a[sortConfig.key]
-      const bValue = b[sortConfig.key]
+  const handleEditRoom = (room) => {
+    setSelectedRoom(room)
+    setValue('room_number', room.room_number)
+    setValue('room_type', room.room_type)
+    setValue('price_per_day', room.price_per_day)
+    setValue('description', room.description || '')
+    setShowModal(true)
+  }
 
-      if (aValue < bValue) {
-        return sortConfig.direction === 'asc' ? -1 : 1
+  const handleDeleteRoom = async (roomId) => {
+    if (window.confirm('Are you sure you want to delete this room?')) {
+      try {
+        await deleteRoom(roomId)
+      } catch (error) {
+        console.error('Error deleting room:', error)
       }
-      if (aValue > bValue) {
-        return sortConfig.direction === 'asc' ? 1 : -1
+    }
+  }
+
+  const onSubmit = async (data) => {
+    try {
+      if (selectedRoom) {
+        await updateRoom(selectedRoom.id, data)
+      } else {
+        await addRoom(data)
       }
-      return 0
-    })
-  }, [filteredData, sortConfig])
-
-  // Paginate data
-  const paginatedData = useMemo(() => {
-    if (!pagination) return sortedData
-
-    const startIndex = (currentPage - 1) * pageSize
-    return sortedData.slice(startIndex, startIndex + pageSize)
-  }, [sortedData, currentPage, pageSize, pagination])
-
-  const totalPages = Math.ceil(sortedData.length / pageSize)
-
-  const handleSort = (key) => {
-    if (!sortable) return
-
-    setSortConfig(prevConfig => ({
-      key,
-      direction: prevConfig.key === key && prevConfig.direction === 'asc' ? 'desc' : 'asc'
-    }))
+      setShowModal(false)
+      reset()
+      setSelectedRoom(null)
+    } catch (error) {
+      console.error('Error saving room:', error)
+    }
   }
 
-  const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return null
-    return sortConfig.direction === 'asc' ? 
-      <ChevronUp className="w-4 h-4" /> : 
-      <ChevronDown className="w-4 h-4" />
-  }
-
-  if (isLoading) {
-    return (
-      <div className={cn('card', className)}>
-        <LoadingTable rows={pageSize} columns={columns.length} />
-      </div>
-    )
-  }
+  const columns = [
+    {
+      header: 'Room Number',
+      accessor: 'room_number',
+      render: (value) => (
+        <div className="font-semibold text-white">{value}</div>
+      )
+    },
+    {
+      header: 'Type',
+      accessor: 'room_type',
+      render: (value) => (
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+          value === 'ac' 
+            ? 'bg-blue-900/30 text-blue-400 border border-blue-800' 
+            : 'bg-green-900/30 text-green-400 border border-green-800'
+        }`}>
+          {value === 'ac' ? 'AC Room' : 'Non-AC Room'}
+        </span>
+      )
+    },
+    {
+      header: 'Price/Day',
+      accessor: 'price_per_day',
+      render: (value) => (
+        <div className="font-semibold text-primary-400">
+          {formatCurrency(value)}
+        </div>
+      )
+    },
+    {
+      header: 'Description',
+      accessor: 'description',
+      render: (value) => (
+        <div className="text-slate-300 max-w-xs truncate">
+          {value || 'No description'}
+        </div>
+      )
+    },
+    {
+      header: 'Actions',
+      accessor: 'id',
+      sortable: false,
+      render: (value, room) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEditRoom(room)}
+            className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
+            title="Edit Room"
+          >
+            <Edit className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => handleDeleteRoom(value)}
+            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
+            title="Delete Room"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      )
+    }
+  ]
 
   return (
-    <div className={cn('card overflow-hidden', className)}>
-      {/* Search and Filters */}
-      {(searchable || filterable) && (
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6">
-          {searchable && (
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-field pl-10"
-              />
-            </div>
-          )}
-          
-          {filterable && (
-            <button className="btn-secondary flex items-center gap-2 justify-center sm:w-auto">
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
-          )}
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-white mb-2">Room Management</h1>
+          <p className="text-slate-400">Manage hotel rooms and pricing</p>
         </div>
-      )}
-
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-dark-700">
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  className={cn(
-                    'text-left py-3 px-2 sm:px-4 font-semibold text-slate-300 text-sm sm:text-base',
-                    sortable && column.sortable !== false && 'cursor-pointer hover:text-white',
-                    column.className
-                  )}
-                  onClick={() => column.sortable !== false && handleSort(column.accessor)}
-                >
-                  <div className="flex items-center gap-2">
-                    {column.header}
-                    {sortable && column.sortable !== false && getSortIcon(column.accessor)}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedData.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="text-center py-8 text-slate-400 text-sm sm:text-base">
-                  {emptyMessage}
-                </td>
-              </tr>
-            ) : (
-              paginatedData.map((item, rowIndex) => (
-                <motion.tr
-                  key={item.id || rowIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: rowIndex * 0.05 }}
-                  className="border-b border-dark-800 hover:bg-dark-800/30 transition-colors"
-                >
-                  {columns.map((column, colIndex) => (
-                    <td key={colIndex} className={cn('py-3 px-2 sm:px-4 text-sm sm:text-base', column.cellClassName)}>
-                      {column.render ? 
-                        column.render(item[column.accessor], item, rowIndex) : 
-                        item[column.accessor]
-                      }
-                    </td>
-                  ))}
-                </motion.tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <button
+          onClick={handleAddRoom}
+          className="btn-primary flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Add Room
+        </button>
       </div>
 
-      {/* Pagination */}
-      {pagination && totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-6 pt-6 border-t border-dark-700">
-          <div className="text-xs sm:text-sm text-slate-400 order-2 sm:order-1">
-            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-600/20 rounded-lg">
+              <Hotel className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-slate-400 text-sm">Total Rooms</p>
+              <p className="text-2xl font-bold text-white">{rooms.length}</p>
+            </div>
           </div>
-          
-          <div className="flex items-center gap-2 order-1 sm:order-2">
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="card"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-600/20 rounded-lg">
+              <Hotel className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-slate-400 text-sm">AC Rooms</p>
+              <p className="text-2xl font-bold text-white">
+                {rooms.filter(r => r.room_type === 'ac').length}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="card"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-600/20 rounded-lg">
+              <Hotel className="w-6 h-6 text-green-400" />
+            </div>
+            <div>
+              <p className="text-slate-400 text-sm">Non-AC Rooms</p>
+              <p className="text-2xl font-bold text-white">
+                {rooms.filter(r => r.room_type === 'non_ac').length}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Rooms Table */}
+      <DataTable
+        data={rooms}
+        columns={columns}
+        isLoading={isLoading}
+        emptyMessage="No rooms found. Add your first room to get started."
+        searchable={true}
+        sortable={true}
+        pagination={true}
+        pageSize={10}
+      />
+
+      {/* Add/Edit Room Modal */}
+      <Modal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false)
+          setSelectedRoom(null)
+          reset()
+        }}
+        title={selectedRoom ? 'Edit Room' : 'Add New Room'}
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Room Number
+              </label>
+              <input
+                {...register('room_number')}
+                type="text"
+                className="input-field"
+                placeholder="e.g., 101"
+              />
+              {errors.room_number && (
+                <p className="mt-1 text-sm text-red-400">{errors.room_number.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Room Type
+              </label>
+              <select
+                {...register('room_type')}
+                className="input-field"
+              >
+                <option value="">Select Type</option>
+                <option value="ac">AC Room</option>
+                <option value="non_ac">Non-AC Room</option>
+              </select>
+              {errors.room_type && (
+                <p className="mt-1 text-sm text-red-400">{errors.room_type.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Price per Day (Rs.)
+            </label>
+            <input
+              {...register('price_per_day')}
+              type="number"
+              step="0.01"
+              className="input-field"
+              placeholder="e.g., 8500.00"
+            />
+            {errors.price_per_day && (
+              <p className="mt-1 text-sm text-red-400">{errors.price_per_day.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Description (Optional)
+            </label>
+            <textarea
+              {...register('description')}
+              rows={3}
+              className="input-field resize-none"
+              placeholder="Room description, amenities, etc."
+            />
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-400">{errors.description.message}</p>
+            )}
+          </div>
+
+          <div className="flex flex-row gap-3 pt-4 lg:flex-col">
             <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm px-3 py-2 lg:text-xs lg:px-2 lg:py-1"
+              type="button"
+              onClick={() => {
+                setShowModal(false)
+                setSelectedRoom(null)
+                reset()
+              }}
+              className="btn-secondary w-auto order-2 lg:w-full lg:order-1"
             >
-              Previous
+              Cancel
             </button>
-            
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const page = i + 1
-              return (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={cn(
-                    'px-3 py-2 rounded-lg font-medium transition-colors text-sm lg:px-2 lg:py-1 lg:text-xs',
-                    currentPage === page
-                      ? 'bg-primary-600 text-white'
-                      : 'text-slate-400 hover:text-white hover:bg-dark-700'
-                  )}
-                >
-                  {page}
-                </button>
-              )
-            })}
-            
             <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm px-3 py-2 lg:text-xs lg:px-2 lg:py-1"
+              type="submit"
+              disabled={isLoading}
+              className="btn-primary flex-1 order-1 flex items-center justify-center gap-2 lg:w-full lg:order-2"
             >
-              Next
+              {isLoading ? (
+                <LoadingSpinner size="sm" color="white" />
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  {selectedRoom ? 'Update' : 'Add'} Room
+                </>
+              )}
             </button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
     </div>
   )
 }

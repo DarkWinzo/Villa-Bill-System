@@ -27,7 +27,11 @@
   }
   
   .card {
-    @apply bg-dark-900 border border-dark-700 rounded-xl p-6 shadow-lg;
+    @apply bg-dark-900/50 backdrop-blur-sm border border-dark-700/50 rounded-xl p-6 shadow-lg hover:bg-dark-900/70 transition-all duration-200;
+  }
+  
+  .card-hover {
+    @apply hover:transform hover:scale-[1.02] hover:shadow-xl transition-all duration-200;
   }
   
   .table-row {

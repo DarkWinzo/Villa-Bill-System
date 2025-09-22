@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "Vila POS Billing System",
   "type": "module",
-  "main": "src/main.js",
+  "main": "public/electron.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "electron": "electron .",
-    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron": "electron public/electron.js",
+    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron public/electron.js\"",
     "build-electron": "npm run build && electron-builder",
     "build-win": "npm run build && electron-builder --win"
   },
@@ -24,15 +24,14 @@
     },
     "files": [
       "dist/**/*",
-      "src/main.js",
-      "src/services/**/*",
-      "src/config.js",
+      "public/electron.js",
+      "public/preload.js",
       "assets/**/*",
       "node_modules/**/*"
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.png"
     }
   },
   "dependencies": {
