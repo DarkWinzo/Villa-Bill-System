@@ -38,7 +38,6 @@ export const useAuthStore = create(
 
       clearError: () => set({ error: null }),
 
-      // Initialize auth state
       initialize: () => {
         const storedUser = get().user
         if (storedUser) {
