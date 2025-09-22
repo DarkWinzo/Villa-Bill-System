@@ -88,7 +88,7 @@ export const DataTable = ({
     <div className={cn('card overflow-hidden', className)}>
       {/* Search and Filters */}
       {(searchable || filterable) && (
-        <div className="flex flex-row items-center gap-4 mb-6 sm:flex-col sm:items-stretch sm:gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6">
           {searchable && (
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -103,7 +103,7 @@ export const DataTable = ({
           )}
           
           {filterable && (
-            <button className="btn-secondary flex items-center gap-2 justify-center sm:justify-start">
+            <button className="btn-secondary flex items-center gap-2 justify-center sm:w-auto">
               <Filter className="w-4 h-4" />
               Filters
             </button>
@@ -120,7 +120,7 @@ export const DataTable = ({
                 <th
                   key={index}
                   className={cn(
-                    'text-left py-3 px-4 font-semibold text-slate-300 text-base lg:px-2 lg:text-sm',
+                    'text-left py-3 px-2 sm:px-4 font-semibold text-slate-300 text-sm sm:text-base',
                     sortable && column.sortable !== false && 'cursor-pointer hover:text-white',
                     column.className
                   )}
@@ -137,7 +137,7 @@ export const DataTable = ({
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-8 text-slate-400 text-base lg:text-sm">
+                <td colSpan={columns.length} className="text-center py-8 text-slate-400 text-sm sm:text-base">
                   {emptyMessage}
                 </td>
               </tr>
@@ -151,7 +151,7 @@ export const DataTable = ({
                   className="border-b border-dark-800 hover:bg-dark-800/30 transition-colors"
                 >
                   {columns.map((column, colIndex) => (
-                    <td key={colIndex} className={cn('py-3 px-4 text-base lg:px-2 lg:text-sm', column.cellClassName)}>
+                    <td key={colIndex} className={cn('py-3 px-2 sm:px-4 text-sm sm:text-base', column.cellClassName)}>
                       {column.render ? 
                         column.render(item[column.accessor], item, rowIndex) : 
                         item[column.accessor]
@@ -167,16 +167,16 @@ export const DataTable = ({
 
       {/* Pagination */}
       {pagination && totalPages > 1 && (
-        <div className="flex flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-dark-700 lg:flex-col lg:gap-3">
-          <div className="text-sm text-slate-400 order-2 lg:order-1 lg:text-xs">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-6 pt-6 border-t border-dark-700">
+          <div className="text-xs sm:text-sm text-slate-400 order-2 sm:order-1">
             Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
           </div>
           
-          <div className="flex items-center gap-2 order-1 lg:order-2">
+          <div className="flex items-center gap-2 order-1 sm:order-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm px-3 py-2 lg:text-xs lg:px-2 lg:py-1"
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
             >
               Previous
             </button>
@@ -188,7 +188,7 @@ export const DataTable = ({
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={cn(
-                    'px-3 py-2 rounded-lg font-medium transition-colors text-sm lg:px-2 lg:py-1 lg:text-xs',
+                    'px-2 py-1 sm:px-3 sm:py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm',
                     currentPage === page
                       ? 'bg-primary-600 text-white'
                       : 'text-slate-400 hover:text-white hover:bg-dark-700'
@@ -202,7 +202,7 @@ export const DataTable = ({
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm px-3 py-2 lg:text-xs lg:px-2 lg:py-1"
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
             >
               Next
             </button>

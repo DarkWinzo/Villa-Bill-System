@@ -41,7 +41,7 @@ export const CashierLayout = ({ children }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -50,7 +50,7 @@ export const CashierLayout = ({ children }) => {
       {/* Sidebar */}
       <div className="relative">
         {/* Desktop Sidebar */}
-        <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
+        <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30">
           <div className="flex flex-col flex-grow bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto">
             {/* Logo */}
             <div className="flex items-center gap-3 px-6 py-6 border-b border-dark-700/50 flex-shrink-0">
@@ -116,7 +116,7 @@ export const CashierLayout = ({ children }) => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-64 bg-dark-900/95 backdrop-blur-xl border-r border-dark-700/50 overflow-y-auto md:hidden"
             >
               <div className="flex h-full flex-col">
                 {/* Logo with close button */}
@@ -188,13 +188,13 @@ export const CashierLayout = ({ children }) => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
+      <div className="flex-1 flex flex-col min-w-0 md:pl-64">
         {/* Top bar */}
         <header className="bg-dark-900/50 backdrop-blur-xl border-b border-dark-700/50 px-4 sm:px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-slate-400 hover:text-white hover:bg-dark-800 rounded-lg transition-colors lg:hidden"
+              className="p-2 text-slate-400 hover:text-white hover:bg-dark-800 rounded-lg transition-colors md:hidden"
             >
               <Menu className="w-6 h-6" />
             </button>

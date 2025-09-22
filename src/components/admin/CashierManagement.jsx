@@ -1,282 +1,214 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Users, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useCashierStore } from '../../stores/cashierStore'
-import { cashierSchema } from '../../utils/validation'
-import { Modal } from '../common/Modal'
-import { DataTable } from '../common/DataTable'
-import { LoadingSpinner } from '../common/LoadingSpinner'
+import { ChevronUp, ChevronDown, Search, Filter } from 'lucide-react'
+import { cn } from '../../utils/cn'
+import { LoadingTable } from './LoadingSpinner'
 
-export const CashierManagement = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingCashier, setEditingCashier] = useState(null)
-  const [showPassword, setShowPassword] = useState(false)
-  
-  const { cashiers, isLoading, fetchCashiers, addCashier, updateCashier, deleteCashier } = useCashierStore()
+export const DataTable = ({
+  data = [],
+  columns = [],
+  isLoading = false,
+  searchable = true,
+  sortable = true,
+  filterable = false,
+  pagination = true,
+  pageSize = 10,
+  className = '',
+  emptyMessage = 'No data available'
+}) => {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
+  const [currentPage, setCurrentPage] = useState(1)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue
-  } = useForm({
-    resolver: yupResolver(cashierSchema)
-  })
+  // Filter and search data
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return data
 
-  useEffect(() => {
-    fetchCashiers()
-  }, [fetchCashiers])
+    return data.filter(item =>
+      columns.some(column => {
+        const value = column.accessor ? item[column.accessor] : ''
+        return String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      })
+    )
+  }, [data, searchTerm, columns])
 
-  const handleOpenModal = (cashier = null) => {
-    setEditingCashier(cashier)
-    if (cashier) {
-      setValue('username', cashier.username)
-      setValue('full_name', cashier.full_name || '')
-      setValue('email', cashier.email || '')
-      setValue('phone', cashier.phone || '')
-      setValue('password', '') // Don't pre-fill password for security
-    } else {
-      reset()
-    }
-    setIsModalOpen(true)
-  }
+  // Sort data
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return filteredData
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setEditingCashier(null)
-    setShowPassword(false)
-    reset()
-  }
+    return [...filteredData].sort((a, b) => {
+      const aValue = a[sortConfig.key]
+      const bValue = b[sortConfig.key]
 
-  const onSubmit = async (data) => {
-    try {
-      if (editingCashier) {
-        await updateCashier(editingCashier.id, data)
-      } else {
-        await addCashier(data)
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1
       }
-      handleCloseModal()
-    } catch (error) {
-      console.error('Error saving cashier:', error)
-    }
-  }
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this cashier?')) {
-      try {
-        await deleteCashier(id)
-      } catch (error) {
-        console.error('Error deleting cashier:', error)
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1
       }
-    }
+      return 0
+    })
+  }, [filteredData, sortConfig])
+
+  // Paginate data
+  const paginatedData = useMemo(() => {
+    if (!pagination) return sortedData
+
+    const startIndex = (currentPage - 1) * pageSize
+    return sortedData.slice(startIndex, startIndex + pageSize)
+  }, [sortedData, currentPage, pageSize, pagination])
+
+  const totalPages = Math.ceil(sortedData.length / pageSize)
+
+  const handleSort = (key) => {
+    if (!sortable) return
+
+    setSortConfig(prevConfig => ({
+      key,
+      direction: prevConfig.key === key && prevConfig.direction === 'asc' ? 'desc' : 'asc'
+    }))
   }
 
-  const columns = [
-    {
-      header: 'Username',
-      accessor: 'username',
-      className: 'font-medium text-white'
-    },
-    {
-      header: 'Full Name',
-      accessor: 'full_name',
-      render: (value) => value || 'N/A'
-    },
-    {
-      header: 'Email',
-      accessor: 'email',
-      render: (value) => value || 'N/A'
-    },
-    {
-      header: 'Phone',
-      accessor: 'phone',
-      render: (value) => value || 'N/A'
-    },
-    {
-      header: 'Created',
-      accessor: 'created_at',
-      render: (value) => new Date(value).toLocaleDateString('en-LK')
-    },
-    {
-      header: 'Actions',
-      accessor: 'id',
-      sortable: false,
-      render: (value, row) => (
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleOpenModal(row)}
-            className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
-            title="Edit Cashier"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleDelete(value)}
-            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
-            title="Delete Cashier"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      )
-    }
-  ]
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return null
+    return sortConfig.direction === 'asc' ? 
+      <ChevronUp className="w-4 h-4" /> : 
+      <ChevronDown className="w-4 h-4" />
+  }
+
+  if (isLoading) {
+    return (
+      <div className={cn('card', className)}>
+        <LoadingTable rows={pageSize} columns={columns.length} />
+      </div>
+    )
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <div className="flex flex-row items-center justify-between gap-4 sm:flex-col sm:items-start sm:gap-3">
-        <div className="flex items-center gap-3">
-          <Users className="w-8 h-8 text-primary-500" />
-          <h1 className="text-3xl font-bold text-white sm:text-2xl">Cashier Management</h1>
+    <div className={cn('card overflow-hidden', className)}>
+      {/* Search and Filters */}
+      {(searchable || filterable) && (
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6">
+          {searchable && (
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-field pl-10"
+              />
+            </div>
+          )}
+          
+          {filterable && (
+            <button className="btn-secondary flex items-center gap-2 justify-center sm:w-auto">
+              <Filter className="w-4 h-4" />
+              Filters
+            </button>
+          )}
         </div>
-        <button 
-          onClick={() => handleOpenModal()}
-          className="btn-primary flex items-center gap-2 w-auto justify-center sm:w-full"
-        >
-          <Plus className="w-5 h-5" />
-          Add Cashier
-        </button>
+      )}
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-dark-700">
+              {columns.map((column, index) => (
+                <th
+                  key={index}
+                  className={cn(
+                    'text-left py-3 px-2 sm:px-4 font-semibold text-slate-300 text-sm sm:text-base',
+                    sortable && column.sortable !== false && 'cursor-pointer hover:text-white',
+                    column.className
+                  )}
+                  onClick={() => column.sortable !== false && handleSort(column.accessor)}
+                >
+                  <div className="flex items-center gap-2">
+                    {column.header}
+                    {sortable && column.sortable !== false && getSortIcon(column.accessor)}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center py-8 text-slate-400 text-sm sm:text-base">
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((item, rowIndex) => (
+                <motion.tr
+                  key={item.id || rowIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: rowIndex * 0.05 }}
+                  className="border-b border-dark-800 hover:bg-dark-800/30 transition-colors"
+                >
+                  {columns.map((column, colIndex) => (
+                    <td key={colIndex} className={cn('py-3 px-2 sm:px-4 text-sm sm:text-base', column.cellClassName)}>
+                      {column.render ? 
+                        column.render(item[column.accessor], item, rowIndex) : 
+                        item[column.accessor]
+                      }
+                    </td>
+                  ))}
+                </motion.tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      <DataTable
-        data={cashiers}
-        columns={columns}
-        isLoading={isLoading}
-        emptyMessage="No cashiers found. Add your first cashier to get started."
-        searchable={true}
-        sortable={true}
-        pagination={true}
-        pageSize={10}
-      />
-
-      {/* Add/Edit Cashier Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={editingCashier ? 'Edit Cashier' : 'Add New Cashier'}
-        size="md"
-      >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Username *
-              </label>
-              <input
-                {...register('username')}
-                type="text"
-                className="input-field"
-                placeholder="Enter username"
-              />
-              {errors.username && (
-                <p className="mt-1 text-sm text-red-400">{errors.username.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Full Name *
-              </label>
-              <input
-                {...register('full_name')}
-                type="text"
-                className="input-field"
-                placeholder="Enter full name"
-              />
-              {errors.full_name && (
-                <p className="mt-1 text-sm text-red-400">{errors.full_name.message}</p>
-              )}
-            </div>
+      {/* Pagination */}
+      {pagination && totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-6 pt-6 border-t border-dark-700">
+          <div className="text-xs sm:text-sm text-slate-400 order-2 sm:order-1">
+            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Password *
-            </label>
-            <div className="relative">
-              <input
-                {...register('password')}
-                type={showPassword ? 'text' : 'password'}
-                className="input-field pr-12"
-                placeholder={editingCashier ? "Leave blank to keep current password" : "Enter password"}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Email
-              </label>
-              <input
-                {...register('email')}
-                type="email"
-                className="input-field"
-                placeholder="Enter email address"
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Phone
-              </label>
-              <input
-                {...register('phone')}
-                type="tel"
-                className="input-field"
-                placeholder="Enter phone number"
-              />
-              {errors.phone && (
-                <p className="mt-1 text-sm text-red-400">{errors.phone.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-3 pt-4 lg:flex-col">
+          
+          <div className="flex items-center gap-2 order-1 sm:order-2">
             <button
-              type="button"
-              onClick={handleCloseModal}
-              className="btn-secondary w-auto order-2 lg:w-full lg:order-1"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm px-3 py-2 lg:text-xs lg:px-2 lg:py-1"
             >
-              Cancel
+              Previous
             </button>
+            
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const page = i + 1
+              return (
+                <button
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  onClick={() => setCurrentPage(page)}
+                  className={cn(
+                    'px-3 py-2 rounded-lg font-medium transition-colors text-sm lg:px-2 lg:py-1 lg:text-xs',
+                    currentPage === page
+                      ? 'bg-primary-600 text-white'
+                      : 'text-slate-400 hover:text-white hover:bg-dark-700'
+                  )}
+                >
+                  {page}
+                </button>
+              )
+            })}
+            
             <button
-              type="submit"
-              disabled={isLoading}
-              className="btn-primary w-auto order-1 flex items-center justify-center gap-2 lg:w-full lg:order-2"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="btn-secondary w-full sm:w-auto order-2 sm:order-1"
             >
-              {isLoading ? (
-                <LoadingSpinner size="sm" color="white" />
-              ) : (
-                <>
-                  {editingCashier ? 'Update' : 'Add'} Cashier
-                </>
-              )}
+              Next
             </button>
           </div>
-        </form>
-      </Modal>
-    </motion.div>
+        </div>
+      )}
+              className="btn-primary w-full sm:w-auto order-1 sm:order-2 flex items-center justify-center gap-2"
   )
 }

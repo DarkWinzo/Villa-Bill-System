@@ -1,270 +1,214 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Hotel, Edit, Trash2 } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useRoomStore } from '../../stores/roomStore'
-import { roomSchema } from '../../utils/validation'
-import { Modal } from '../common/Modal'
-import { DataTable } from '../common/DataTable'
-import { LoadingSpinner } from '../common/LoadingSpinner'
-import { formatCurrency } from '../../utils/currency'
+import { ChevronUp, ChevronDown, Search, Filter } from 'lucide-react'
+import { cn } from '../../utils/cn'
+import { LoadingTable } from './LoadingSpinner'
 
-export const RoomManagement = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingRoom, setEditingRoom] = useState(null)
-  
-  const { rooms, isLoading, fetchRooms, addRoom, updateRoom, deleteRoom } = useRoomStore()
+export const DataTable = ({
+  data = [],
+  columns = [],
+  isLoading = false,
+  searchable = true,
+  sortable = true,
+  filterable = false,
+  pagination = true,
+  pageSize = 10,
+  className = '',
+  emptyMessage = 'No data available'
+}) => {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
+  const [currentPage, setCurrentPage] = useState(1)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue
-  } = useForm({
-    resolver: yupResolver(roomSchema)
-  })
+  // Filter and search data
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return data
 
-  useEffect(() => {
-    fetchRooms()
-  }, [fetchRooms])
+    return data.filter(item =>
+      columns.some(column => {
+        const value = column.accessor ? item[column.accessor] : ''
+        return String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      })
+    )
+  }, [data, searchTerm, columns])
 
-  const handleOpenModal = (room = null) => {
-    setEditingRoom(room)
-    if (room) {
-      setValue('room_number', room.room_number)
-      setValue('room_type', room.room_type)
-      setValue('price_per_day', room.price_per_day)
-      setValue('description', room.description || '')
-    } else {
-      reset()
-    }
-    setIsModalOpen(true)
-  }
+  // Sort data
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return filteredData
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setEditingRoom(null)
-    reset()
-  }
+    return [...filteredData].sort((a, b) => {
+      const aValue = a[sortConfig.key]
+      const bValue = b[sortConfig.key]
 
-  const onSubmit = async (data) => {
-    try {
-      if (editingRoom) {
-        await updateRoom(editingRoom.id, data)
-      } else {
-        await addRoom(data)
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1
       }
-      handleCloseModal()
-    } catch (error) {
-      console.error('Error saving room:', error)
-    }
-  }
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this room?')) {
-      try {
-        await deleteRoom(id)
-      } catch (error) {
-        console.error('Error deleting room:', error)
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1
       }
-    }
+      return 0
+    })
+  }, [filteredData, sortConfig])
+
+  // Paginate data
+  const paginatedData = useMemo(() => {
+    if (!pagination) return sortedData
+
+    const startIndex = (currentPage - 1) * pageSize
+    return sortedData.slice(startIndex, startIndex + pageSize)
+  }, [sortedData, currentPage, pageSize, pagination])
+
+  const totalPages = Math.ceil(sortedData.length / pageSize)
+
+  const handleSort = (key) => {
+    if (!sortable) return
+
+    setSortConfig(prevConfig => ({
+      key,
+      direction: prevConfig.key === key && prevConfig.direction === 'asc' ? 'desc' : 'asc'
+    }))
   }
 
-  const columns = [
-    {
-      header: 'Room Number',
-      accessor: 'room_number',
-      className: 'font-medium text-white'
-    },
-    {
-      header: 'Type',
-      accessor: 'room_type',
-      render: (value) => (
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-          value === 'ac' 
-            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-            : 'bg-green-500/20 text-green-400 border border-green-500/30'
-        }`}>
-          {value === 'ac' ? 'AC Room' : 'Non-AC Room'}
-        </span>
-      )
-    },
-    {
-      header: 'Price/Day',
-      accessor: 'price_per_day',
-      render: (value) => (
-        <span className="font-semibold text-primary-400">
-          {formatCurrency(value)}
-        </span>
-      )
-    },
-    {
-      header: 'Description',
-      accessor: 'description',
-      render: (value) => value || 'No description'
-    },
-    {
-      header: 'Created',
-      accessor: 'created_at',
-      render: (value) => new Date(value).toLocaleDateString('en-LK')
-    },
-    {
-      header: 'Actions',
-      accessor: 'id',
-      sortable: false,
-      render: (value, row) => (
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleOpenModal(row)}
-            className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
-            title="Edit Room"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleDelete(value)}
-            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
-            title="Delete Room"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      )
-    }
-  ]
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return null
+    return sortConfig.direction === 'asc' ? 
+      <ChevronUp className="w-4 h-4" /> : 
+      <ChevronDown className="w-4 h-4" />
+  }
+
+  if (isLoading) {
+    return (
+      <div className={cn('card', className)}>
+        <LoadingTable rows={pageSize} columns={columns.length} />
+      </div>
+    )
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <div className="flex flex-row items-center justify-between gap-4 sm:flex-col sm:items-start sm:gap-3">
-        <div className="flex items-center gap-3">
-          <Hotel className="w-8 h-8 text-primary-500" />
-          <h1 className="text-3xl font-bold text-white sm:text-2xl">Room Management</h1>
+    <div className={cn('card overflow-hidden', className)}>
+      {/* Search and Filters */}
+      {(searchable || filterable) && (
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6">
+          {searchable && (
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-field pl-10"
+              />
+            </div>
+          )}
+          
+          {filterable && (
+            <button className="btn-secondary flex items-center gap-2 justify-center sm:w-auto">
+              <Filter className="w-4 h-4" />
+              Filters
+            </button>
+          )}
         </div>
-        <button 
-          onClick={() => handleOpenModal()}
-          className="btn-primary flex items-center gap-2 w-auto justify-center sm:w-full"
-        >
-          <Plus className="w-5 h-5" />
-          Add Room
-        </button>
+      )}
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-dark-700">
+              {columns.map((column, index) => (
+                <th
+                  key={index}
+                  className={cn(
+                    'text-left py-3 px-2 sm:px-4 font-semibold text-slate-300 text-sm sm:text-base',
+                    sortable && column.sortable !== false && 'cursor-pointer hover:text-white',
+                    column.className
+                  )}
+                  onClick={() => column.sortable !== false && handleSort(column.accessor)}
+                >
+                  <div className="flex items-center gap-2">
+                    {column.header}
+                    {sortable && column.sortable !== false && getSortIcon(column.accessor)}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center py-8 text-slate-400 text-sm sm:text-base">
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((item, rowIndex) => (
+                <motion.tr
+                  key={item.id || rowIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: rowIndex * 0.05 }}
+                  className="border-b border-dark-800 hover:bg-dark-800/30 transition-colors"
+                >
+                  {columns.map((column, colIndex) => (
+                    <td key={colIndex} className={cn('py-3 px-2 sm:px-4 text-sm sm:text-base', column.cellClassName)}>
+                      {column.render ? 
+                        column.render(item[column.accessor], item, rowIndex) : 
+                        item[column.accessor]
+                      }
+                    </td>
+                  ))}
+                </motion.tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      <DataTable
-        data={rooms}
-        columns={columns}
-        isLoading={isLoading}
-        emptyMessage="No rooms found. Add your first room to get started."
-        searchable={true}
-        sortable={true}
-        pagination={true}
-        pageSize={10}
-      />
-
-      {/* Add/Edit Room Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={editingRoom ? 'Edit Room' : 'Add New Room'}
-        size="md"
-      >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Room Number *
-              </label>
-              <input
-                {...register('room_number')}
-                type="text"
-                className="input-field"
-                placeholder="e.g., 101, A-201"
-              />
-              {errors.room_number && (
-                <p className="mt-1 text-sm text-red-400">{errors.room_number.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Room Type *
-              </label>
-              <select
-                {...register('room_type')}
-                className="input-field"
-              >
-                <option value="">Select room type</option>
-                <option value="ac">AC Room</option>
-                <option value="non_ac">Non-AC Room</option>
-              </select>
-              {errors.room_type && (
-                <p className="mt-1 text-sm text-red-400">{errors.room_type.message}</p>
-              )}
-            </div>
+      {/* Pagination */}
+      {pagination && totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-6 pt-6 border-t border-dark-700">
+          <div className="text-xs sm:text-sm text-slate-400 order-2 sm:order-1">
+            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Price per Day (Rs.) *
-            </label>
-            <input
-              {...register('price_per_day')}
-              type="number"
-              step="0.01"
-              min="0"
-              className="input-field"
-              placeholder="e.g., 8500.00"
-            />
-            {errors.price_per_day && (
-              <p className="mt-1 text-sm text-red-400">{errors.price_per_day.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Description
-            </label>
-            <textarea
-              {...register('description')}
-              rows="3"
-              className="input-field resize-none"
-              placeholder="Room features, amenities, etc."
-            />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-400">{errors.description.message}</p>
-            )}
-          </div>
-
-          <div className="flex flex-row gap-3 pt-4 lg:flex-col">
+          
+          <div className="flex items-center gap-2 order-1 sm:order-2">
             <button
-              type="button"
-              onClick={handleCloseModal}
-              className="btn-secondary w-auto order-2 lg:w-full lg:order-1"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm px-3 py-2 lg:text-xs lg:px-2 lg:py-1"
             >
-              Cancel
+              Previous
             </button>
+            
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const page = i + 1
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={cn(
+                    'px-3 py-2 rounded-lg font-medium transition-colors text-sm lg:px-2 lg:py-1 lg:text-xs',
+                    currentPage === page
+                      ? 'bg-primary-600 text-white'
+                      : 'text-slate-400 hover:text-white hover:bg-dark-700'
+                  )}
+                >
+                  {page}
+                </button>
+              )
+            })}
+            
             <button
-              type="submit"
-              disabled={isLoading}
-              className="btn-primary w-auto order-1 flex items-center justify-center gap-2 lg:w-full lg:order-2"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed text-sm px-3 py-2 lg:text-xs lg:px-2 lg:py-1"
             >
-              {isLoading ? (
-                <LoadingSpinner size="sm" color="white" />
-              ) : (
-                <>
-                  {editingRoom ? 'Update' : 'Add'} Room
-                </>
-              )}
+              Next
             </button>
           </div>
-        </form>
-      </Modal>
-    </motion.div>
+        </div>
+      )}
+    </div>
   )
 }
