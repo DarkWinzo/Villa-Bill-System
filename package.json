@@ -10,10 +10,11 @@
     "preview": "vite preview",
     "electron": "electron public/electron.js",
     "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron public/electron.js\"",
-    "build-electron": "npm run build && cross-env ELECTRON_BUILDER_CACHE=false electron-builder",
-    "build-win": "npm run build && cross-env ELECTRON_BUILDER_CACHE=false electron-builder --win",
-    "clean-cache": "rimraf node_modules/.cache && rimraf %APPDATA%/electron-builder/Cache",
-    "build-win-portable": "npm run build && cross-env ELECTRON_BUILDER_CACHE=false electron-builder --win portable"
+    "build-electron": "npm run build && electron-builder",
+    "build-win": "npm run build && electron-builder --win",
+    "clean-cache": "rimraf node_modules/.cache && rimraf dist-electron",
+    "build-win-portable": "npm run build && electron-builder --win portable",
+    "prebuild-win": "npm run clean-cache"
   },
   "keywords": [
     "pos",
@@ -27,26 +28,46 @@
   "build": {
     "appId": "com.vila.pos",
     "productName": "Vila POS System",
+    "electronVersion": "27.3.11",
     "directories": {
-      "output": "dist-electron"
+      "output": "dist-electron",
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
       "public/electron.js",
       "public/preload.js",
-      "assets/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "!node_modules/.cache/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets",
+        "filter": ["**/*"]
+      }
     ],
     "win": {
-      "target": "nsis",
-      "icon": null
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "publisherName": "Vila POS Team",
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Vila POS System"
     },
-    "compression": "store",
-    "npmRebuild": false
+    "compression": "normal",
+    "npmRebuild": false,
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",

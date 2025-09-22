@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const path = require('path')
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
 
 let mainWindow
 
@@ -9,27 +9,33 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    minWidth: 1200,
+    minHeight: 800,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
       preload: path.join(__dirname, 'preload.js')
-    },
     show: false,
     titleBarStyle: 'default',
-    webSecurity: true
+    webSecurity: true,
+    autoHideMenuBar: false
   })
 
   // Load the app
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+    mainWindow.loadFile(path.join(__dirname, 'index.html'))
   }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
+    
+    if (isDev) {
+      mainWindow.webContents.openDevTools()
+    }
   })
 
   mainWindow.on('closed', () => {
