@@ -10,8 +10,8 @@ export const CashierOverview = () => {
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div className="flex flex-row items-center justify-between gap-4 lg:flex-col lg:items-start lg:gap-3">
-        <h1 className="text-3xl font-bold text-white lg:text-2xl">Cashier Dashboard</h1>
+      <div className="flex flex-row items-center justify-between gap-4 sm:flex-col sm:items-start sm:gap-3">
+        <h1 className="text-3xl font-bold text-white sm:text-2xl">Cashier Dashboard</h1>
         <div className="text-left sm:text-right">
           <p className="text-sm text-slate-400">Today</p>
           <p className="text-lg font-semibold text-white">
@@ -20,7 +20,7 @@ export const CashierOverview = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-6 lg:grid-cols-2 lg:gap-4 md:grid-cols-1 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card card-hover">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">

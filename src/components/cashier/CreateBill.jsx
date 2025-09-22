@@ -104,10 +104,10 @@ export const CreateBill = () => {
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div className="flex flex-row items-center justify-between gap-4 lg:flex-col lg:items-start lg:gap-3">
+      <div className="flex flex-row items-center justify-between gap-4 sm:flex-col sm:items-start sm:gap-3">
         <div className="flex items-center gap-3">
           <PlusCircle className="w-8 h-8 text-primary-500" />
-          <h1 className="text-3xl font-bold text-white lg:text-2xl">Create New Bill</h1>
+          <h1 className="text-3xl font-bold text-white sm:text-2xl">Create New Bill</h1>
         </div>
         <div className="flex items-center gap-2 text-slate-400">
           <Calculator className="w-5 h-5" />

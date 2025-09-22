@@ -142,14 +142,14 @@ export const RoomManagement = () => {
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div className="flex flex-row items-center justify-between gap-4 lg:flex-col lg:items-start lg:gap-3">
+      <div className="flex flex-row items-center justify-between gap-4 sm:flex-col sm:items-start sm:gap-3">
         <div className="flex items-center gap-3">
           <Hotel className="w-8 h-8 text-primary-500" />
-          <h1 className="text-3xl font-bold text-white lg:text-2xl">Room Management</h1>
+          <h1 className="text-3xl font-bold text-white sm:text-2xl">Room Management</h1>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="btn-primary flex items-center gap-2 w-auto justify-center lg:w-full"
+          className="btn-primary flex items-center gap-2 w-auto justify-center sm:w-full"
         >
           <Plus className="w-5 h-5" />
           Add Room

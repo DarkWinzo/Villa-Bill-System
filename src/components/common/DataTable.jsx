@@ -88,7 +88,7 @@ export const DataTable = ({
     <div className={cn('card overflow-hidden', className)}>
       {/* Search and Filters */}
       {(searchable || filterable) && (
-        <div className="flex flex-row items-center gap-4 mb-6 lg:flex-col lg:items-stretch lg:gap-3">
+        <div className="flex flex-row items-center gap-4 mb-6 sm:flex-col sm:items-stretch sm:gap-3">
           {searchable && (
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -103,7 +103,7 @@ export const DataTable = ({
           )}
           
           {filterable && (
-            <button className="btn-secondary flex items-center gap-2 justify-center lg:justify-start">
+            <button className="btn-secondary flex items-center gap-2 justify-center sm:justify-start">
               <Filter className="w-4 h-4" />
               Filters
             </button>
