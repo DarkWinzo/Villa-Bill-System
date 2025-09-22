@@ -18,7 +18,11 @@ import {
   Hotel,
   ArrowRight,
   Crown,
-  UserCheck
+  UserCheck,
+  Palette,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react'
 
 const LoginPage = () => {
@@ -27,6 +31,8 @@ const LoginPage = () => {
   const [isBlocked, setIsBlocked] = useState(false)
   const [blockTimeLeft, setBlockTimeLeft] = useState(0)
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [theme, setTheme] = useState('dark')
+  const [showThemeSelector, setShowThemeSelector] = useState(false)
   
   const { login, isLoading, error } = useAuthStore()
   const navigate = useNavigate()
@@ -120,14 +126,141 @@ const LoginPage = () => {
     return 'success'
   }
 
+  const themes = {
+    dark: {
+      name: 'Dark Ocean',
+      bg: 'from-slate-900 via-blue-900 to-slate-900',
+      card: 'bg-slate-800/95',
+      accent: 'from-blue-600 to-cyan-600',
+      text: 'text-white',
+      icon: Moon
+    },
+    light: {
+      name: 'Light Sky',
+      bg: 'from-blue-50 via-indigo-50 to-purple-50',
+      card: 'bg-white/95',
+      accent: 'from-blue-600 to-purple-600',
+      text: 'text-slate-800',
+      icon: Sun
+    },
+    purple: {
+      name: 'Purple Dream',
+      bg: 'from-purple-900 via-violet-900 to-indigo-900',
+      card: 'bg-purple-800/95',
+      accent: 'from-purple-600 to-pink-600',
+      text: 'text-white',
+      icon: Palette
+    },
+    green: {
+      name: 'Forest Green',
+      bg: 'from-emerald-900 via-teal-900 to-green-900',
+      card: 'bg-emerald-800/95',
+      accent: 'from-emerald-600 to-teal-600',
+      text: 'text-white',
+      icon: Monitor
+    }
+  }
+
+  const currentTheme = themes[theme]
+
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+    <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bg} flex items-center justify-center p-4 relative overflow-hidden`}>
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <motion.div 
+          animate={{ 
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+            scale: [1, 1.2, 1],
+            rotate: [0, 180, 360]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
+        />
+        <motion.div 
+          animate={{ 
+            x: [0, -100, 0],
+            y: [0, 100, 0],
+            scale: [1, 1.1, 1],
+            rotate: [360, 180, 0]
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"
+        />
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.3, 1],
+            rotate: [0, 360, 0],
+            opacity: [0.3, 0.6, 0.3]
+          }}
+          transition={{ 
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"
+        />
       </div>
+
+      {/* Theme Selector */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="absolute top-6 right-6 z-20"
+      >
+        <div className="relative">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowThemeSelector(!showThemeSelector)}
+            className={`p-3 ${currentTheme.card} backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl ${currentTheme.text} hover:shadow-3xl transition-all duration-300`}
+          >
+            <currentTheme.icon className="w-6 h-6" />
+          </motion.button>
+
+          <AnimatePresence>
+            {showThemeSelector && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                className={`absolute top-16 right-0 ${currentTheme.card} backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-4 min-w-[200px]`}
+              >
+                <h3 className={`${currentTheme.text} font-bold mb-3 text-sm`}>Choose Theme</h3>
+                <div className="space-y-2">
+                  {Object.entries(themes).map(([key, themeOption]) => (
+                    <motion.button
+                      key={key}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setTheme(key)
+                        setShowThemeSelector(false)
+                      }}
+                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
+                        theme === key 
+                          ? `bg-gradient-to-r ${themeOption.accent} text-white shadow-lg` 
+                          : `${currentTheme.text} hover:bg-white/10`
+                      }`}
+                    >
+                      <themeOption.icon className="w-4 h-4" />
+                      <span className="text-sm font-medium">{themeOption.name}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
 
       {/* Main login container */}
       <motion.div
@@ -142,7 +275,7 @@ const LoginPage = () => {
         className="relative z-10 w-full max-w-lg"
       >
         {/* Glass morphism card */}
-        <div className="bg-gray-800/90 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8 shadow-2xl">
+        <div className={`${currentTheme.card} backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl`}>
           {/* Header section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -153,7 +286,17 @@ const LoginPage = () => {
             <motion.div
               whileHover={{ scale: 1.1, rotate: 10 }}
               whileTap={{ scale: 0.95 }}
-              className="mx-auto w-24 h-24 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-2xl"
+              animate={{ 
+                boxShadow: [
+                  "0 0 20px rgba(59, 130, 246, 0.3)",
+                  "0 0 40px rgba(147, 51, 234, 0.4)",
+                  "0 0 20px rgba(59, 130, 246, 0.3)"
+                ]
+              }}
+              transition={{ 
+                boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+              }}
+              className={`mx-auto w-24 h-24 bg-gradient-to-br ${currentTheme.accent} rounded-2xl flex items-center justify-center mb-6 shadow-2xl`}
             >
               <Hotel className="w-12 h-12 text-white drop-shadow-lg" />
             </motion.div>
@@ -162,7 +305,7 @@ const LoginPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-3"
+              className={`text-4xl font-bold bg-gradient-to-r ${currentTheme.accent} bg-clip-text text-transparent mb-3`}
             >
               Vila POS System
             </motion.h1>
@@ -171,7 +314,7 @@ const LoginPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-gray-400 flex items-center justify-center gap-2 mb-2"
+              className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} flex items-center justify-center gap-2 mb-2`}
             >
               <Shield className="w-4 h-4" />
               Secure Hotel Management
@@ -181,7 +324,7 @@ const LoginPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="text-sm text-gray-500"
+              className={`text-sm ${theme === 'light' ? 'text-slate-500' : 'text-slate-500'}`}
             >
               {currentTime.toLocaleString('en-LK', {
                 weekday: 'long',
@@ -228,7 +371,7 @@ const LoginPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
             >
-              <label htmlFor="username" className="block text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <label htmlFor="username" className={`block text-sm font-bold ${currentTheme.text} mb-3 flex items-center gap-2`}>
                 <User className="w-4 h-4" />
                 Username
               </label>
@@ -239,17 +382,17 @@ const LoginPage = () => {
                   id="username"
                   disabled={isBlocked}
                   className={`
-                    w-full px-4 py-4 bg-gray-700/50 backdrop-blur-sm border rounded-xl
-                    text-gray-100 placeholder-gray-400 font-medium text-lg
-                    focus:outline-none focus:ring-2 focus:bg-gray-600/50
+                    w-full px-4 py-4 ${theme === 'light' ? 'bg-white/70' : 'bg-slate-700/50'} backdrop-blur-sm border rounded-xl
+                    ${currentTheme.text} ${theme === 'light' ? 'placeholder-slate-400' : 'placeholder-slate-400'} font-medium text-lg
+                    focus:outline-none focus:ring-2 ${theme === 'light' ? 'focus:bg-white/90' : 'focus:bg-slate-600/50'}
                     transition-all duration-300 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
-                    hover:bg-gray-600/30
+                    ${theme === 'light' ? 'hover:bg-white/80' : 'hover:bg-slate-600/30'}
                     ${getFieldStatus('username') === 'error' 
                       ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' 
                       : getFieldStatus('username') === 'success'
                       ? 'border-green-500/50 focus:ring-green-500/50 focus:border-green-500'
-                      : 'border-gray-600/50 focus:ring-blue-500/50 focus:border-blue-500'
+                      : `${theme === 'light' ? 'border-slate-300/50' : 'border-slate-600/50'} focus:ring-blue-500/50 focus:border-blue-500`
                     }
                   `}
                   placeholder="Enter username"
@@ -295,7 +438,7 @@ const LoginPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
             >
-              <label htmlFor="password" className="block text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <label htmlFor="password" className={`block text-sm font-bold ${currentTheme.text} mb-3 flex items-center gap-2`}>
                 <Lock className="w-4 h-4" />
                 Password
               </label>
@@ -306,17 +449,17 @@ const LoginPage = () => {
                   id="password"
                   disabled={isBlocked}
                   className={`
-                    w-full px-4 pr-16 py-4 bg-gray-700/50 backdrop-blur-sm border rounded-xl
-                    text-gray-100 placeholder-gray-400 font-medium text-lg
-                    focus:outline-none focus:ring-2 focus:bg-gray-600/50
+                    w-full px-4 pr-16 py-4 ${theme === 'light' ? 'bg-white/70' : 'bg-slate-700/50'} backdrop-blur-sm border rounded-xl
+                    ${currentTheme.text} ${theme === 'light' ? 'placeholder-slate-400' : 'placeholder-slate-400'} font-medium text-lg
+                    focus:outline-none focus:ring-2 ${theme === 'light' ? 'focus:bg-white/90' : 'focus:bg-slate-600/50'}
                     transition-all duration-300 ease-out
                     disabled:opacity-50 disabled:cursor-not-allowed
-                    hover:bg-gray-600/30
+                    ${theme === 'light' ? 'hover:bg-white/80' : 'hover:bg-slate-600/30'}
                     ${getFieldStatus('password') === 'error' 
                       ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' 
                       : getFieldStatus('password') === 'success'
                       ? 'border-green-500/50 focus:ring-green-500/50 focus:border-green-500'
-                      : 'border-gray-600/50 focus:ring-blue-500/50 focus:border-blue-500'
+                      : `${theme === 'light' ? 'border-slate-300/50' : 'border-slate-600/50'} focus:ring-blue-500/50 focus:border-blue-500`
                     }
                   `}
                   placeholder="Enter password"
@@ -329,7 +472,7 @@ const LoginPage = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isBlocked}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-all duration-300 disabled:opacity-50 hover:scale-110 z-10"
+                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 ${theme === 'light' ? 'text-slate-600 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'} transition-all duration-300 disabled:opacity-50 hover:scale-110 z-10`}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </motion.button>
@@ -412,6 +555,16 @@ const LoginPage = () => {
               <motion.button
                 whileHover={{ scale: isBlocked ? 1 : 1.05 }}
                 whileTap={{ scale: isBlocked ? 1 : 0.98 }}
+                animate={!isBlocked && !isLoading ? {
+                  boxShadow: [
+                    "0 4px 20px rgba(59, 130, 246, 0.3)",
+                    "0 8px 30px rgba(147, 51, 234, 0.4)",
+                    "0 4px 20px rgba(59, 130, 246, 0.3)"
+                  ]
+                } : {}}
+                transition={{ 
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                }}
                 type="submit"
                 disabled={isLoading || isBlocked || !isValid}
                 className={`
@@ -421,8 +574,8 @@ const LoginPage = () => {
                   disabled:opacity-50 disabled:cursor-not-allowed
                   shadow-2xl
                   ${isBlocked 
-                    ? 'bg-gray-600/50' 
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-blue-500/25'
+                    ? `${theme === 'light' ? 'bg-slate-400/50' : 'bg-slate-600/50'}` 
+                    : `bg-gradient-to-r ${currentTheme.accent} hover:shadow-3xl transform hover:-translate-y-1`
                   }
                 `}
               >
@@ -454,30 +607,30 @@ const LoginPage = () => {
             transition={{ delay: 1.0, duration: 0.6 }}
             className="mt-8 text-center space-y-6"
           >
-            <div className="flex items-center justify-center gap-2 text-white/60 text-sm font-medium">
+            <div className={`flex items-center justify-center gap-2 ${theme === 'light' ? 'text-slate-600' : 'text-white/60'} text-sm font-medium`}>
               <Shield className="w-4 h-4" />
-              <span className="text-gray-400">Enterprise-Grade Security</span>
+              <span className={theme === 'light' ? 'text-slate-600' : 'text-slate-400'}>Enterprise-Grade Security</span>
             </div>
             
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50">
-              <p className="text-sm font-semibold text-gray-300 mb-3 flex items-center justify-center gap-2">
+            <div className={`${theme === 'light' ? 'bg-white/50' : 'bg-slate-800/50'} backdrop-blur-sm rounded-xl p-4 border ${theme === 'light' ? 'border-slate-200/50' : 'border-slate-700/50'}`}>
+              <p className={`text-sm font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-3 flex items-center justify-center gap-2`}>
                 <UserCheck className="w-4 h-4" />
                 Default Login Credentials
               </p>
-              <div className="space-y-2 text-xs text-gray-400">
-                <div className="flex items-center justify-between bg-gray-700/30 rounded-lg p-2">
+              <div className="space-y-2 text-xs">
+                <div className={`flex items-center justify-between ${theme === 'light' ? 'bg-slate-100/70' : 'bg-slate-700/30'} rounded-lg p-2`}>
                   <div className="flex items-center gap-2">
                     <Crown className="w-3 h-3 text-orange-400" />
-                    <span className="font-medium">Admin:</span>
+                    <span className={`font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Admin:</span>
                   </div>
-                  <span className="font-mono">Admin / Admin@123</span>
+                  <span className={`font-mono ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>Admin / Admin@123</span>
                 </div>
-                <div className="flex items-center justify-between bg-gray-700/30 rounded-lg p-2">
+                <div className={`flex items-center justify-between ${theme === 'light' ? 'bg-slate-100/70' : 'bg-slate-700/30'} rounded-lg p-2`}>
                   <div className="flex items-center gap-2">
                     <User className="w-3 h-3 text-blue-400" />
-                    <span className="font-medium">Cashier:</span>
+                    <span className={`font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>Cashier:</span>
                   </div>
-                  <span className="font-mono">cashier1 / cashier123</span>
+                  <span className={`font-mono ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'}`}>cashier1 / cashier123</span>
                 </div>
               </div>
             </div>

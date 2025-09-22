@@ -113,20 +113,20 @@ export const DataTable = ({
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-full">
           <thead>
-            <tr className="border-b border-white/20">
+            <tr className="border-b border-white/20 bg-gradient-to-r from-slate-800/50 to-slate-700/50">
               {columns.map((column, index) => (
                 <th
                   key={index}
                   className={cn(
-                    'text-left py-4 px-2 sm:px-4 font-bold text-white text-sm sm:text-base bg-gradient-to-r from-purple-600/20 to-blue-600/20',
+                    'text-left py-6 px-4 sm:px-6 font-bold text-white text-sm sm:text-base whitespace-nowrap',
                     sortable && column.sortable !== false && 'cursor-pointer hover:text-white',
                     column.className
                   )}
                   onClick={() => column.sortable !== false && handleSort(column.accessor)}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {column.header}
                     {sortable && column.sortable !== false && getSortIcon(column.accessor)}
                   </div>
@@ -137,7 +137,7 @@ export const DataTable = ({
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-8 text-slate-400 text-sm sm:text-base">
+                <td colSpan={columns.length} className="text-center py-12 text-slate-400 text-base">
                   {emptyMessage}
                 </td>
               </tr>
@@ -148,10 +148,10 @@ export const DataTable = ({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: rowIndex * 0.05 }}
-                  className="border-b border-white/10 hover:bg-white/5 transition-all duration-300 hover:scale-[1.01]"
+                  className="border-b border-white/10 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 transition-all duration-300 hover:shadow-lg"
                 >
                   {columns.map((column, colIndex) => (
-                    <td key={colIndex} className={cn('py-3 px-2 sm:px-4 text-sm sm:text-base', column.cellClassName)}>
+                    <td key={colIndex} className={cn('py-4 px-4 sm:px-6 text-sm sm:text-base whitespace-nowrap', column.cellClassName)}>
                       {column.render ? 
                         column.render(item[column.accessor], item, rowIndex) : 
                         item[column.accessor]

@@ -68,7 +68,7 @@ export const CashierManagement = () => {
       setShowModal(false)
       setSelectedCashier(null)
       setFormData({ name: '', email: '', password: '', isActive: true })
-      fetchCashiers() // Refresh the list
+      await fetchCashiers() // Refresh the list
     } catch (error) {
       console.error('Error saving cashier:', error)
     }
@@ -90,7 +90,6 @@ export const CashierManagement = () => {
     if (window.confirm('Are you sure you want to delete this cashier?')) {
       try {
         await deleteCashier(cashierId)
-        fetchCashiers() // Refresh the list
       } catch (error) {
         console.error('Error deleting cashier:', error)
       }
@@ -102,7 +101,6 @@ export const CashierManagement = () => {
       const cashier = cashiers.find(c => c.id === cashierId)
       if (cashier) {
         await updateCashier(cashierId, { ...cashier, isActive: !cashier.isActive })
-        loadCashiers() // Refresh the list
       }
     } catch (error) {
       console.error('Error updating cashier status:', error)
@@ -362,7 +360,7 @@ export const CashierManagement = () => {
               onClick={() => {
                 setShowModal(false)
                 setSelectedCashier(null)
-                setFormData({ name: '', email: '', password: '', isActive: true })
+                setFormData({ username: '', full_name: '', email: '', password: '', isActive: true })
               }}
               className="btn-secondary flex-1"
             >

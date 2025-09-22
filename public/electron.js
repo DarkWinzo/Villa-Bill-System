@@ -8,10 +8,10 @@ let mainWindow
 function createWindow() {
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 1000,
-    minWidth: 1400,
-    minHeight: 900,
+    width: 1920,
+    height: 1080,
+    minWidth: 1200,
+    minHeight: 800,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -19,18 +19,15 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     show: false,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#1f2937',
-      symbolColor: '#ffffff'
-    },
+    titleBarStyle: 'default',
     webSecurity: true,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     icon: path.join(__dirname, '../build/icon.ico'),
     frame: true,
     resizable: true,
     maximizable: true,
-    fullscreenable: true
+    fullscreenable: true,
+    center: true
   })
 
   // Load the app
@@ -43,8 +40,10 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
     
-    // Maximize window on startup for better experience
-    mainWindow.maximize()
+    // Start in fullscreen for better desktop app experience
+    if (!isDev) {
+      mainWindow.setFullScreen(true)
+    }
     
     if (isDev) {
       mainWindow.webContents.openDevTools()
@@ -105,7 +104,15 @@ function createMenu() {
         { role: 'zoomIn' },
         { role: 'zoomOut' },
         { type: 'separator' },
-        { role: 'togglefullscreen' }
+        { role: 'togglefullscreen' },
+        {
+          label: 'Always on Top',
+          type: 'checkbox',
+          click: () => {
+            const isAlwaysOnTop = mainWindow.isAlwaysOnTop()
+            mainWindow.setAlwaysOnTop(!isAlwaysOnTop)
+          }
+        }
       ]
     },
     {

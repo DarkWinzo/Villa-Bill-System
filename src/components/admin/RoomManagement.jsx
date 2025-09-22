@@ -75,8 +75,14 @@ export const RoomManagement = () => {
       header: 'Room Number',
       accessor: 'room_number',
       render: (value) => (
-        <div className="font-bold text-white text-lg bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          #{value}
+        <div className="flex items-center gap-2">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-sm">#{value}</span>
+          </div>
+          <div>
+            <div className="font-bold text-white text-lg">Room {value}</div>
+            <div className="text-xs text-slate-400">Available</div>
+          </div>
         </div>
       )
     },
@@ -85,13 +91,14 @@ export const RoomManagement = () => {
       accessor: 'room_type',
       render: (value) => (
         <div className="flex items-center gap-2">
-          <span className={`px-3 py-2 rounded-full text-sm font-bold shadow-lg ${
+          <div className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 ${
             value === 'ac' 
               ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' 
               : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
           }`}>
-            {value === 'ac' ? '❄️ AC Room' : '🌿 Non-AC Room'}
-          </span>
+            <span className="text-lg">{value === 'ac' ? '❄️' : '🌿'}</span>
+            <span>{value === 'ac' ? 'AC Room' : 'Non-AC Room'}</span>
+          </div>
         </div>
       )
     },
@@ -99,12 +106,14 @@ export const RoomManagement = () => {
       header: 'Price/Day',
       accessor: 'price_per_day',
       render: (value) => (
-        <div className="text-right">
-          <div className="font-bold text-xl text-green-400 mb-1">
-            {formatCurrency(value)}
-          </div>
-          <div className="text-xs text-gray-400">
-            per day
+        <div className="text-center">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-xl shadow-lg">
+            <div className="font-bold text-lg mb-1">
+              {formatCurrency(value)}
+            </div>
+            <div className="text-xs opacity-90">
+              per day
+            </div>
           </div>
         </div>
       )
@@ -114,9 +123,9 @@ export const RoomManagement = () => {
       accessor: 'description',
       render: (value) => (
         <div className="max-w-xs">
-          <div className="text-slate-300 text-sm leading-relaxed">
+          <div className="text-slate-300 text-sm leading-relaxed bg-slate-800/50 p-3 rounded-lg">
             {value || (
-              <span className="text-gray-500 italic">No description available</span>
+              <span className="text-slate-500 italic">No description available</span>
             )}
           </div>
         </div>
@@ -126,13 +135,12 @@ export const RoomManagement = () => {
       header: 'Status',
       accessor: 'is_active',
       render: (value) => (
-        <span className={`px-3 py-2 rounded-full text-sm font-bold shadow-lg ${
-          value === 'ac' 
-            ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' 
-            : 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
-        }`}>
-          ✅ Available
-        </span>
+        <div className="flex justify-center">
+          <span className="px-4 py-2 rounded-full text-sm font-bold shadow-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white flex items-center gap-2">
+            <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+            Available
+          </span>
+        </div>
       )
     },
     {
@@ -140,25 +148,30 @@ export const RoomManagement = () => {
       accessor: 'id',
       sortable: false,
       render: (value, room) => (
-        <div className="flex items-center gap-2">
-          <button
+        <div className="flex items-center gap-2 justify-center">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={() => handleEditRoom(room)}
-            className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
+            className="p-3 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-xl transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
             title="Edit Room"
           >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
+            <Edit className="w-5 h-5" />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={() => handleDeleteRoom(value)}
-            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
+            className="p-3 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-xl transition-all duration-300 shadow-lg hover:shadow-red-500/25"
             title="Delete Room"
           >
-            <Trash2 className="w-4 h-4" />
-          </button>
+            <Trash2 className="w-5 h-5" />
+          </motion.button>
         </div>
       )
     }
   ]
+            {formatCurrency(value)}
 
   return (
     <div className="space-y-6">
