@@ -138,7 +138,7 @@ const RoomManagement = () => {
     {
       key: 'number',
       label: 'Room Number',
-      render: (room) => (
+      render: (value, room) => (
         <div className="flex items-center space-x-2">
           {getStatusIcon(room.status)}
           <span className="font-medium">{room.number}</span>
@@ -152,12 +152,12 @@ const RoomManagement = () => {
     {
       key: 'hourlyRate',
       label: 'Hourly Rate',
-      render: (room) => `₱${room.hourlyRate.toFixed(2)}`
+      render: (value, room) => `₱${room.hourlyRate.toFixed(2)}`
     },
     {
       key: 'status',
       label: 'Status',
-      render: (room) => (
+      render: (value, room) => (
         <span className={getStatusBadge(room.status)}>
           {room.status}
         </span>
@@ -166,7 +166,7 @@ const RoomManagement = () => {
     {
       key: 'actions',
       label: 'Actions',
-      render: (room) => (
+      render: (value, room) => (
         <div className="flex space-x-2">
           <button
             onClick={() => handleEdit(room)}
