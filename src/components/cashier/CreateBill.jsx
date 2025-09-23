@@ -226,7 +226,7 @@ export const CreateBill = () => {
                 <option value="">Select a room</option>
                 {rooms.map(room => (
                   <option key={room.id} value={room.id}>
-                    {room.room_number} - {room.room_type === 'ac' ? 'AC' : 'Non-AC'} 
+                    {room.room_number} - {room.room_type === 'ac' ? 'AC Room' : 'Non-AC Room'} 
                     ({formatCurrency(room.price_per_day)}/day)
                   </option>
                 ))}
