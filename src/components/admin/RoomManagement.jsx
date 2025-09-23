@@ -9,10 +9,11 @@ const RoomManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
   const [formData, setFormData] = useState({
-    number: '',
-    type: 'Standard',
-    hourlyRate: '',
-    status: 'Available'
+    room_number: '',
+    room_type: 'Standard',
+    price_per_day: '',
+    description: '',
+    is_active: true
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -23,12 +24,12 @@ const RoomManagement = () => {
   const validateForm = () => {
     const errors = {};
     
-    if (!formData.number.trim()) {
-      errors.number = 'Room number is required';
+    if (!formData.room_number.trim()) {
+      errors.room_number = 'Room number is required';
     }
     
-    if (!formData.hourlyRate || formData.hourlyRate <= 0) {
-      errors.hourlyRate = 'Valid hourly rate is required';
+    if (!formData.price_per_day || formData.price_per_day <= 0) {
+      errors.price_per_day = 'Valid price per day is required';
     }
     
     setFormErrors(errors);
@@ -43,7 +44,7 @@ const RoomManagement = () => {
     try {
       const roomData = {
         ...formData,
-        hourlyRate: parseFloat(formData.hourlyRate)
+        price_per_day: parseFloat(formData.price_per_day)
       };
 
       if (editingRoom) {
@@ -61,10 +62,11 @@ const RoomManagement = () => {
   const handleEdit = (room) => {
     setEditingRoom(room);
     setFormData({
-      number: room.number,
-      type: room.type,
-      hourlyRate: room.hourlyRate.toString(),
-      status: room.status
+      room_number: room.room_number,
+      room_type: room.room_type,
+      price_per_day: room.price_per_day.toString(),
+      description: room.description || '',
+      is_active: room.is_active
     });
     setIsModalOpen(true);
   };
@@ -83,10 +85,11 @@ const RoomManagement = () => {
     setIsModalOpen(false);
     setEditingRoom(null);
     setFormData({
-      number: '',
-      type: 'Standard',
-      hourlyRate: '',
-      status: 'Available'
+      room_number: '',
+      room_type: 'Standard',
+      price_per_day: '',
+      description: '',
+      is_active: true
     });
     setFormErrors({});
   };
@@ -108,58 +111,42 @@ const RoomManagement = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Available':
-        return <Wifi className="w-4 h-4 text-green-500" />;
-      case 'Occupied':
-        return <WifiOff className="w-4 h-4 text-red-500" />;
-      case 'Maintenance':
-        return <WifiOff className="w-4 h-4 text-yellow-500" />;
-      default:
-        return <Wifi className="w-4 h-4 text-gray-500" />;
-    }
+    return status ? <Wifi className="w-4 h-4 text-green-500" /> : <WifiOff className="w-4 h-4 text-red-500" />;
   };
 
   const getStatusBadge = (status) => {
     const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
-    switch (status) {
-      case 'Available':
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case 'Occupied':
-        return `${baseClasses} bg-red-100 text-red-800`;
-      case 'Maintenance':
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
-    }
+    return status 
+      ? `${baseClasses} bg-green-100 text-green-800`
+      : `${baseClasses} bg-red-100 text-red-800`;
   };
 
   const columns = [
     {
-      key: 'number',
+      key: 'room_number',
       label: 'Room Number',
       render: (value, room) => (
         <div className="flex items-center space-x-2">
-          {getStatusIcon(room.status)}
-          <span className="font-medium">{room.number}</span>
+          {getStatusIcon(room.is_active)}
+          <span className="font-medium">{room.room_number}</span>
         </div>
       )
     },
     {
-      key: 'type',
+      key: 'room_type',
       label: 'Type'
     },
     {
-      key: 'hourlyRate',
-      label: 'Hourly Rate',
-      render: (value, room) => `₱${room.hourlyRate.toFixed(2)}`
+      key: 'price_per_day',
+      label: 'Price Per Day',
+      render: (value, room) => `₱${room.price_per_day.toFixed(2)}`
     },
     {
-      key: 'status',
+      key: 'is_active',
       label: 'Status',
       render: (value, room) => (
-        <span className={getStatusBadge(room.status)}>
-          {room.status}
+        <span className={getStatusBadge(room.is_active)}>
+          {room.is_active ? 'Active' : 'Inactive'}
         </span>
       )
     },
@@ -179,7 +166,6 @@ const RoomManagement = () => {
             onClick={() => handleDelete(room.id)}
             className="p-1 text-red-600 hover:text-red-800 transition-colors"
             title="Delete Room"
-            disabled={room.status === 'Occupied'}
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -225,33 +211,33 @@ const RoomManagement = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="number" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="room_number" className="block text-sm font-medium text-gray-700 mb-1">
               Room Number
             </label>
             <input
               type="text"
-              id="number"
-              name="number"
-              value={formData.number}
+              id="room_number"
+              name="room_number"
+              value={formData.room_number}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                formErrors.number ? 'border-red-500' : 'border-gray-300'
+                formErrors.room_number ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="e.g., 101, A1, etc."
             />
-            {formErrors.number && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.number}</p>
+            {formErrors.room_number && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.room_number}</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="room_type" className="block text-sm font-medium text-gray-700 mb-1">
               Room Type
             </label>
             <select
-              id="type"
-              name="type"
-              value={formData.type}
+              id="room_type"
+              name="room_type"
+              value={formData.room_type}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -263,40 +249,55 @@ const RoomManagement = () => {
           </div>
 
           <div>
-            <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-1">
-              Hourly Rate (₱)
+            <label htmlFor="price_per_day" className="block text-sm font-medium text-gray-700 mb-1">
+              Price Per Day (₱)
             </label>
             <input
               type="number"
-              id="hourlyRate"
-              name="hourlyRate"
-              value={formData.hourlyRate}
+              id="price_per_day"
+              name="price_per_day"
+              value={formData.price_per_day}
               onChange={handleInputChange}
               min="0"
               step="0.01"
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                formErrors.hourlyRate ? 'border-red-500' : 'border-gray-300'
+                formErrors.price_per_day ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="0.00"
             />
-            {formErrors.hourlyRate && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.hourlyRate}</p>
+            {formErrors.price_per_day && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.price_per_day}</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows="3"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Room description..."
+            />
+          </div>
+
+          <div>
+            <label htmlFor="is_active" className="block text-sm font-medium text-gray-700 mb-1">
               Status
             </label>
             <select
-              id="status"
-              name="status"
-              value={formData.status}
+              id="is_active"
+              name="is_active"
+              value={formData.is_active}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="Available">Available</option>
-              <option value="Maintenance">Maintenance</option>
+              <option value={true}>Active</option>
+              <option value={false}>Inactive</option>
             </select>
           </div>
 
