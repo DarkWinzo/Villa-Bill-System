@@ -9,14 +9,16 @@
     "preview": "vite preview",
     "electron": "electron public/electron.js",
     "electron-dev": "cross-env NODE_ENV=development electron public/electron.js",
-    "build-electron": "npm run build && electron-builder",
-    "build-win": "npm run build && electron-builder --win",
+    "build-electron": "npm run build && electron-builder --publish=never",
+    "build-win": "npm run build && electron-builder --win --publish=never",
     "clean-cache": "rimraf node_modules/.cache && rimraf dist-electron",
-    "build-win-portable": "npm run build && electron-builder --win portable",
+    "build-win-portable": "npm run build && electron-builder --win portable --publish=never",
     "prebuild-win": "npm run clean-cache",
-    "start": "npm run build && electron public/electron.js",
-    "app": "electron public/electron.js",
-    "app-dev": "cross-env NODE_ENV=development electron public/electron.js"
+    "start": "npm run build && cross-env NODE_ENV=production electron public/electron.js",
+    "app": "cross-env NODE_ENV=production electron public/electron.js",
+    "app-dev": "cross-env NODE_ENV=development electron public/electron.js",
+    "build-and-run": "npm run build && npm run app",
+    "dist": "npm run build && electron-builder --publish=never"
   },
   "keywords": [
     "pos",

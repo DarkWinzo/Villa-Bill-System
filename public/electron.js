@@ -1,11 +1,9 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const path = require('path')
-const { spawn } = require('child_process')
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
 
 let mainWindow
-let viteProcess = null
 
 function createWindow() {
   // Create the browser window
@@ -18,11 +16,11 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      webSecurity: true
     },
     show: false,
     titleBarStyle: 'default',
-    webSecurity: true,
     autoHideMenuBar: false,
     icon: path.join(__dirname, '../build/icon.ico'),
     frame: true,
@@ -33,18 +31,88 @@ function createWindow() {
     title: 'Vila POS System'
   })
 
-  // Load the app
-  if (isDev) {
-    // Start Vite dev server programmatically
-    startViteServer().then(() => {
-      mainWindow.loadURL('http://localhost:5173')
-    }).catch(() => {
-      // Fallback to built files if dev server fails
-      mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
-    })
-  } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
-  }
+  // Always load from built files for offline operation
+  const indexPath = isDev 
+    ? path.join(__dirname, '../dist/index.html')
+    : path.join(__dirname, '../dist/index.html')
+
+  mainWindow.loadFile(indexPath).catch((error) => {
+    console.error('Failed to load application:', error)
+    
+    // Fallback: create a simple error page
+    const errorHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Vila POS System - Error</title>
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+              color: white;
+              margin: 0;
+              padding: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+            }
+            .error-container {
+              text-align: center;
+              max-width: 500px;
+              padding: 40px;
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 20px;
+              backdrop-filter: blur(10px);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .error-icon {
+              font-size: 64px;
+              margin-bottom: 20px;
+            }
+            .error-title {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 16px;
+              color: #ef4444;
+            }
+            .error-message {
+              font-size: 16px;
+              margin-bottom: 24px;
+              opacity: 0.8;
+              line-height: 1.5;
+            }
+            .error-instructions {
+              font-size: 14px;
+              opacity: 0.7;
+              background: rgba(0, 0, 0, 0.2);
+              padding: 16px;
+              border-radius: 8px;
+              border-left: 4px solid #3b82f6;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="error-container">
+            <div class="error-icon">⚠️</div>
+            <h1 class="error-title">Application Not Built</h1>
+            <p class="error-message">
+              The Vila POS System needs to be built before it can run offline.
+            </p>
+            <div class="error-instructions">
+              <strong>To fix this issue:</strong><br>
+              1. Open terminal/command prompt<br>
+              2. Navigate to the project folder<br>
+              3. Run: <code>npm run build</code><br>
+              4. Then run: <code>npm run app</code>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+    
+    mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`)
+  })
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
@@ -59,59 +127,10 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null
-    if (viteProcess) {
-      viteProcess.kill()
-      viteProcess = null
-    }
   })
 
   // Set up menu
   createMenu()
-}
-
-function startViteServer() {
-  return new Promise((resolve, reject) => {
-    if (viteProcess) {
-      resolve()
-      return
-    }
-
-    const isWindows = process.platform === 'win32'
-    const npmCmd = isWindows ? 'npm.cmd' : 'npm'
-    
-    viteProcess = spawn(npmCmd, ['run', 'dev'], {
-      cwd: path.join(__dirname, '..'),
-      stdio: 'pipe'
-    })
-
-    let serverStarted = false
-    
-    viteProcess.stdout.on('data', (data) => {
-      const output = data.toString()
-      console.log('Vite:', output)
-      
-      if (output.includes('Local:') && !serverStarted) {
-        serverStarted = true
-        setTimeout(resolve, 2000) // Wait a bit for server to be fully ready
-      }
-    })
-
-    viteProcess.stderr.on('data', (data) => {
-      console.error('Vite Error:', data.toString())
-    })
-
-    viteProcess.on('error', (error) => {
-      console.error('Failed to start Vite server:', error)
-      reject(error)
-    })
-
-    // Timeout after 30 seconds
-    setTimeout(() => {
-      if (!serverStarted) {
-        reject(new Error('Vite server failed to start within 30 seconds'))
-      }
-    }, 30000)
-  })
 }
 
 function createMenu() {
@@ -119,6 +138,16 @@ function createMenu() {
     {
       label: 'File',
       submenu: [
+        {
+          label: 'Refresh',
+          accelerator: 'F5',
+          click: () => {
+            if (mainWindow) {
+              mainWindow.reload()
+            }
+          }
+        },
+        { type: 'separator' },
         {
           label: 'Exit',
           accelerator: 'CmdOrCtrl+Q',
@@ -174,7 +203,21 @@ function createMenu() {
               type: 'info',
               title: 'About Vila POS System',
               message: 'Vila POS System v1.0.0',
-              detail: 'A comprehensive hotel management and billing system.\n\nBuilt with Electron, React, and modern web technologies.',
+              detail: 'A comprehensive hotel management and billing system.\n\nBuilt with Electron and React for offline operation.\n\nNo internet connection required.',
+              buttons: ['OK']
+            })
+          }
+        },
+        {
+          label: 'System Information',
+          click: () => {
+            const { dialog } = require('electron')
+            const os = require('os')
+            dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              title: 'System Information',
+              message: 'Vila POS System Information',
+              detail: `Platform: ${os.platform()}\nArchitecture: ${os.arch()}\nNode Version: ${process.versions.node}\nElectron Version: ${process.versions.electron}\nChrome Version: ${process.versions.chrome}`,
               buttons: ['OK']
             })
           }
@@ -188,36 +231,133 @@ function createMenu() {
 }
 
 // This method will be called when Electron has finished initialization
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow()
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
+})
 
 // Quit when all windows are closed
 app.on('window-all-closed', () => {
-  if (viteProcess) {
-    viteProcess.kill()
-    viteProcess = null
-  }
   app.quit()
 })
 
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
-  }
-})
-
-// Handle app termination
-app.on('before-quit', () => {
-  if (viteProcess) {
-    viteProcess.kill()
-    viteProcess = null
-  }
-})
-
-// IPC handlers for future database operations
+// IPC handlers for application functionality
 ipcMain.handle('app:getVersion', () => {
   return app.getVersion()
 })
 
 ipcMain.handle('app:getName', () => {
   return app.getName()
+})
+
+ipcMain.handle('app:getPlatform', () => {
+  return process.platform
+})
+
+ipcMain.handle('app:getPath', (event, name) => {
+  return app.getPath(name)
+})
+
+// Data persistence handlers
+ipcMain.handle('storage:get', (event, key) => {
+  // In a real application, you might want to use a proper database
+  // For now, we'll use the renderer's localStorage through IPC
+  return null
+})
+
+ipcMain.handle('storage:set', (event, key, value) => {
+  // In a real application, you might want to use a proper database
+  return true
+})
+
+// Print handler for bills
+ipcMain.handle('print:bill', (event, billData) => {
+  return new Promise((resolve) => {
+    // Create a hidden window for printing
+    const printWindow = new BrowserWindow({
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    })
+
+    const printHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Bill ${billData.bill_number}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .bill-info { margin-bottom: 20px; }
+            .customer-info { margin-bottom: 20px; }
+            .booking-details { margin-bottom: 20px; }
+            .total { font-size: 18px; font-weight: bold; text-align: right; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Vila POS System</h1>
+            <h2>Bill #${billData.bill_number}</h2>
+          </div>
+          <div class="bill-info">
+            <p><strong>Date:</strong> ${new Date(billData.created_at).toLocaleDateString()}</p>
+          </div>
+          <div class="customer-info">
+            <h3>Customer Information</h3>
+            <p><strong>Name:</strong> ${billData.customer_name}</p>
+            <p><strong>Phone:</strong> ${billData.customer_phone || 'N/A'}</p>
+            <p><strong>Address:</strong> ${billData.customer_address || 'N/A'}</p>
+          </div>
+          <div class="booking-details">
+            <h3>Booking Details</h3>
+            <table>
+              <tr>
+                <th>Room</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Days</th>
+                <th>Rate/Day</th>
+                <th>Total</th>
+              </tr>
+              <tr>
+                <td>${billData.room_number}</td>
+                <td>${new Date(billData.check_in_date).toLocaleDateString()}</td>
+                <td>${new Date(billData.check_out_date).toLocaleDateString()}</td>
+                <td>${billData.days}</td>
+                <td>Rs. ${billData.price_per_day.toFixed(2)}</td>
+                <td>Rs. ${billData.total_amount.toFixed(2)}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="total">
+            <p>Total Amount: Rs. ${billData.total_amount.toFixed(2)}</p>
+          </div>
+        </body>
+      </html>
+    `
+
+    printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(printHtml)}`)
+    
+    printWindow.webContents.once('did-finish-load', () => {
+      printWindow.webContents.print({
+        silent: false,
+        printBackground: true,
+        margins: {
+          marginType: 'minimum'
+        }
+      }, (success, failureReason) => {
+        printWindow.close()
+        resolve({ success, failureReason })
+      })
+    })
+  })
 })

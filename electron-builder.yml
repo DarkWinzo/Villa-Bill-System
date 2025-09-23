@@ -9,8 +9,7 @@ files:
   - public/electron.js
   - public/preload.js
   - package.json
-  - node_modules/**/*
-  - "!node_modules/.cache/**/*"
+  - node_modules/electron/**/*
   - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
   - "!.editorconfig"
   - "!**/._*"
@@ -20,16 +19,26 @@ files:
   - "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
   - "!src/**/*"
   - "!*.md"
+  - "!README.md"
   - "!vite.config.js"
   - "!tailwind.config.js"
   - "!postcss.config.js"
+  - "!.git/**/*"
+  - "!.gitignore"
+extraResources:
+  - from: "dist"
+    to: "app/dist"
+    filter: ["**/*"]
 win:
   target:
     - target: nsis
       arch: [x64]
+    - target: portable
+      arch: [x64]
   publisherName: Vila POS Team
   verifyUpdateCodeSignature: false
   requestedExecutionLevel: asInvoker
+  artifactName: "${productName}-${version}-${arch}.${ext}"
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
@@ -42,7 +51,12 @@ nsis:
   runAfterFinish: true
   createStartMenuShortcut: true
   menuCategory: "Business"
+  displayLanguageSelector: false
+  installerLanguages: ["en_US"]
+  language: "1033"
 compression: normal
 npmRebuild: false
 nodeGypRebuild: false
 buildDependenciesFromSource: false
+asar: true
+asarUnpack: ["dist/**/*"]

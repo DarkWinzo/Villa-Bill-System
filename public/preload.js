@@ -6,13 +6,31 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // App info
   getVersion: () => ipcRenderer.invoke('app:getVersion'),
   getName: () => ipcRenderer.invoke('app:getName'),
+  getPlatform: () => ipcRenderer.invoke('app:getPlatform'),
+  getPath: (name) => ipcRenderer.invoke('app:getPath', name),
   
   // Platform info
   platform: process.platform,
   isElectron: true,
+  isOffline: true,
   
-  // Future database operations can be added here
-  // For now, the app uses localStorage for data persistence
+  // Storage operations
+  storage: {
+    get: (key) => ipcRenderer.invoke('storage:get', key),
+    set: (key, value) => ipcRenderer.invoke('storage:set', key, value)
+  },
+  
+  // Print operations
+  print: {
+    bill: (billData) => ipcRenderer.invoke('print:bill', billData)
+  },
+  
+  // System operations
+  system: {
+    showMessageBox: (options) => ipcRenderer.invoke('system:showMessageBox', options),
+    showSaveDialog: (options) => ipcRenderer.invoke('system:showSaveDialog', options),
+    showOpenDialog: (options) => ipcRenderer.invoke('system:showOpenDialog', options)
+  }
 })
 
 // Prevent new window creation
