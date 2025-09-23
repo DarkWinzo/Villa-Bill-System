@@ -1,41 +1,55 @@
-import { format, parseISO, differenceInDays, isValid, startOfDay, endOfDay } from 'date-fns'
 
 // Date formatting utilities
 export const formatDate = (date, formatString = 'yyyy-MM-dd') => {
   if (!date) return ''
   
   try {
-    const dateObj = typeof date === 'string' ? parseISO(date) : date
-    return isValid(dateObj) ? format(dateObj, formatString) : ''
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    if (isNaN(dateObj.getTime())) return ''
+    
+    // Simple date formatting without date-fns
+    if (formatString === 'yyyy-MM-dd') {
+      return dateObj.toISOString().split('T')[0]
+    } else if (formatString === 'MMM dd, yyyy') {
+      return dateObj.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: '2-digit', 
+        year: 'numeric' 
+      })
+    } else if (formatString === 'MMM dd, yyyy HH:mm') {
+      return dateObj.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+    return dateObj.toLocaleDateString()
   } catch (error) {
     console.error('Date formatting error:', error)
     return ''
   }
 }
 
-export const formatDateTime = (date) => {
-  return formatDate(date, 'yyyy-MM-dd HH:mm:ss')
-}
 
 export const formatDisplayDate = (date) => {
   return formatDate(date, 'MMM dd, yyyy')
 }
 
-export const formatDisplayDateTime = (date) => {
-  return formatDate(date, 'MMM dd, yyyy HH:mm')
-}
 
 // Date calculation utilities
 export const calculateDays = (checkIn, checkOut) => {
   if (!checkIn || !checkOut) return 0
   
   try {
-    const checkInDate = typeof checkIn === 'string' ? parseISO(checkIn) : checkIn
-    const checkOutDate = typeof checkOut === 'string' ? parseISO(checkOut) : checkOut
+    const checkInDate = typeof checkIn === 'string' ? new Date(checkIn) : checkIn
+    const checkOutDate = typeof checkOut === 'string' ? new Date(checkOut) : checkOut
     
-    if (!isValid(checkInDate) || !isValid(checkOutDate)) return 0
+    if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) return 0
     
-    const days = differenceInDays(checkOutDate, checkInDate)
+    const timeDiff = checkOutDate.getTime() - checkInDate.getTime()
+    const days = Math.ceil(timeDiff / (1000 * 3600 * 24))
     return Math.max(days, 1) // Minimum 1 day
   } catch (error) {
     console.error('Date calculation error:', error)
@@ -48,8 +62,8 @@ export const isValidDate = (date) => {
   if (!date) return false
   
   try {
-    const dateObj = typeof date === 'string' ? parseISO(date) : date
-    return isValid(dateObj)
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    return !isNaN(dateObj.getTime())
   } catch (error) {
     return false
   }
@@ -58,8 +72,9 @@ export const isValidDate = (date) => {
 export const isFutureDate = (date) => {
   if (!isValidDate(date)) return false
   
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  const today = startOfDay(new Date())
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
   
   return dateObj >= today
 }
@@ -67,8 +82,9 @@ export const isFutureDate = (date) => {
 export const isPastDate = (date) => {
   if (!isValidDate(date)) return false
   
-  const dateObj = typeof date === 'string' ? parseISO(date) : date
-  const today = endOfDay(new Date())
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  const today = new Date()
+  today.setHours(23, 59, 59, 999)
   
   return dateObj < today
 }
@@ -90,8 +106,8 @@ export const getDateRange = (startDate, endDate) => {
 export const getTodayRange = () => {
   const today = new Date()
   return {
-    start: startOfDay(today),
-    end: endOfDay(today)
+    start: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+    end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
   }
 }
 
@@ -101,7 +117,7 @@ export const getThisMonthRange = () => {
   const end = new Date(today.getFullYear(), today.getMonth() + 1, 0)
   
   return {
-    start: startOfDay(start),
-    end: endOfDay(end)
+    start: new Date(start.getFullYear(), start.getMonth(), start.getDate()),
+    end: new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999)
   }
 }

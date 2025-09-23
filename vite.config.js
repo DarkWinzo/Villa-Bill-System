@@ -18,26 +18,9 @@ module.exports = defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
     target: 'esnext',
     minify: 'esbuild',
-    assetsDir: 'assets',
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['framer-motion', 'lucide-react'],
-          forms: ['react-hook-form', '@hookform/resolvers', 'yup'],
-          state: ['zustand'],
-          utils: ['date-fns', 'clsx', 'tailwind-merge']
-        }
-      }
-    }
   },
   base: './',
   publicDir: 'public'

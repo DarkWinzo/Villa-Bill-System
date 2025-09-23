@@ -9,27 +9,7 @@ files:
   - public/electron.js
   - public/preload.js
   - package.json
-  - node_modules/**/*
-  - "!node_modules/.cache/**/*"
-  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
-  - "!.editorconfig"
-  - "!**/._*"
-  - "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}"
-  - "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}"
-  - "!**/{appveyor.yml,.travis.yml,circle.yml}"
-  - "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
   - "!src/**/*"
-  - "!*.md"
-  - "!README.md"
-  - "!vite.config.js"
-  - "!tailwind.config.js"
-  - "!postcss.config.js"
-  - "!.git/**/*"
-  - "!.gitignore"
-extraResources:
-  - from: "dist"
-    to: "app/dist"
-    filter: ["**/*"]
 win:
   target:
     - target: nsis
