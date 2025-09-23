@@ -1,74 +1,72 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Users, UserPlus, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
+import { useCashierStore } from '../../stores/cashierStore'
 import { DataTable } from '../common/DataTable'
 import { Modal } from '../common/Modal'
 import { LoadingSpinner } from '../common/LoadingSpinner'
 
 export const CashierManagement = () => {
-  const [cashiers, setCashiers] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { cashiers, isLoading, fetchCashiers, addCashier, updateCashier, deleteCashier } = useCashierStore()
   const [showModal, setShowModal] = useState(false)
   const [selectedCashier, setSelectedCashier] = useState(null)
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
+    full_name: '',
     email: '',
     password: '',
     isActive: true
   })
+  const [formErrors, setFormErrors] = useState({})
 
   useEffect(() => {
     fetchCashiers()
   }, [])
 
-  const fetchCashiers = async () => {
-    try {
-      setIsLoading(true)
-      // TODO: Implement actual API call
-      // const response = await cashierService.getAllCashiers()
-      // setCashiers(response.data)
-      
-      // Mock data for now
-      setTimeout(() => {
-        setCashiers([
-          {
-            id: 1,
-            name: 'John Doe',
-            email: 'john@example.com',
-            isActive: true,
-            createdAt: '2024-01-15',
-            lastLogin: '2024-01-20'
-          },
-          {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            isActive: false,
-            createdAt: '2024-01-10',
-            lastLogin: '2024-01-18'
-          }
-        ])
-        setIsLoading(false)
-      }, 1000)
-    } catch (error) {
-      console.error('Error fetching cashiers:', error)
-      setIsLoading(false)
+  const validateForm = () => {
+    const errors = {}
+    
+    if (!formData.username.trim()) {
+      errors.username = 'Username is required'
+    } else if (formData.username.length < 3) {
+      errors.username = 'Username must be at least 3 characters'
     }
+    
+    if (!formData.full_name.trim()) {
+      errors.full_name = 'Full name is required'
+    }
+    
+    if (!selectedCashier && !formData.password.trim()) {
+      errors.password = 'Password is required'
+    } else if (formData.password && formData.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters'
+    }
+    
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Invalid email format'
+    }
+    
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    if (!validateForm()) return
+
     try {
       if (selectedCashier) {
-        await updateCashier(selectedCashier.id, formData)
+        const updateData = { ...formData }
+        if (!updateData.password) {
+          delete updateData.password // Don't update password if empty
+        }
+        await updateCashier(selectedCashier.id, updateData)
       } else {
         await addCashier(formData)
       }
       
-      setShowModal(false)
-      setSelectedCashier(null)
-      setFormData({ name: '', email: '', password: '', isActive: true })
-      await fetchCashiers() // Refresh the list
+      handleCloseModal()
     } catch (error) {
       console.error('Error saving cashier:', error)
     }
@@ -93,6 +91,35 @@ export const CashierManagement = () => {
       } catch (error) {
         console.error('Error deleting cashier:', error)
       }
+    }
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setSelectedCashier(null)
+    setFormData({
+      username: '',
+      full_name: '',
+      email: '',
+      password: '',
+      isActive: true
+    })
+    setFormErrors({})
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }))
     }
   }
 
@@ -295,11 +322,16 @@ export const CashierManagement = () => {
             </label>
             <input
               type="text"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              className="input-field"
+              name="username"
+              value={formData.username || ''}
+              onChange={handleInputChange}
+              className={`input-field ${formErrors.username ? 'border-red-500' : ''}`}
+              placeholder="Enter username"
               required
             />
+            {formErrors.username && (
+              <p className="text-red-400 text-sm mt-1">{formErrors.username}</p>
+            )}
           </div>
 
           <div>
@@ -308,11 +340,16 @@ export const CashierManagement = () => {
             </label>
             <input
               type="text"
-              value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="input-field"
+              name="full_name"
+              value={formData.full_name || ''}
+              onChange={handleInputChange}
+              className={`input-field ${formErrors.full_name ? 'border-red-500' : ''}`}
+              placeholder="Enter full name"
               required
             />
+            {formErrors.full_name && (
+              <p className="text-red-400 text-sm mt-1">{formErrors.full_name}</p>
+            )}
           </div>
 
           <div>
@@ -321,11 +358,15 @@ export const CashierManagement = () => {
             </label>
             <input
               type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="input-field"
-              required
+              name="email"
+              value={formData.email || ''}
+              onChange={handleInputChange}
+              className={`input-field ${formErrors.email ? 'border-red-500' : ''}`}
+              placeholder="Enter email (optional)"
             />
+            {formErrors.email && (
+              <p className="text-red-400 text-sm mt-1">{formErrors.email}</p>
+            )}
           </div>
 
           <div>
@@ -334,19 +375,25 @@ export const CashierManagement = () => {
             </label>
             <input
               type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="input-field"
+              name="password"
+              value={formData.password || ''}
+              onChange={handleInputChange}
+              className={`input-field ${formErrors.password ? 'border-red-500' : ''}`}
+              placeholder="Enter password"
               required={!selectedCashier}
             />
+            {formErrors.password && (
+              <p className="text-red-400 text-sm mt-1">{formErrors.password}</p>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
               id="isActive"
+              name="isActive"
               checked={formData.isActive}
-              onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+              onChange={handleInputChange}
               className="rounded border-slate-600 bg-dark-800 text-primary-600 focus:ring-primary-600"
             />
             <label htmlFor="isActive" className="text-sm text-slate-300">
@@ -357,16 +404,12 @@ export const CashierManagement = () => {
           <div className="flex gap-3 pt-4">
             <button
               type="button"
-              onClick={() => {
-                setShowModal(false)
-                setSelectedCashier(null)
-                setFormData({ username: '', full_name: '', email: '', password: '', isActive: true })
-              }}
+              onClick={handleCloseModal}
               className="btn-secondary flex-1"
             >
               Cancel
             </button>
-            <button type="submit" className="btn-primary flex-1">
+            <button type="submit" className="btn-primary flex-1" disabled={isLoading}>
               {selectedCashier ? 'Update' : 'Add'} Cashier
             </button>
           </div>
