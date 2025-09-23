@@ -11,14 +11,16 @@
     "electron-dev": "cross-env NODE_ENV=development electron public/electron.js",
     "build-electron": "npm run build && electron-builder --publish=never",
     "build-win": "npm run build && electron-builder --win --publish=never",
+    "build-win-only": "electron-builder --win --publish=never",
     "clean-cache": "rimraf node_modules/.cache && rimraf dist-electron",
     "build-win-portable": "npm run build && electron-builder --win portable --publish=never",
-    "prebuild-win": "npm run clean-cache",
+    "prebuild-win": "npm run build",
     "start": "npm run build && cross-env NODE_ENV=production electron public/electron.js",
     "app": "cross-env NODE_ENV=production electron public/electron.js",
     "app-dev": "cross-env NODE_ENV=development electron public/electron.js",
     "build-and-run": "npm run build && npm run app",
-    "dist": "npm run build && electron-builder --publish=never"
+    "dist": "npm run build && electron-builder --publish=never",
+    "rebuild-win": "npm run clean-cache && npm run build && npm run build-win"
   },
   "keywords": [
     "pos",

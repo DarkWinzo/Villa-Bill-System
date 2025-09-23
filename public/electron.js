@@ -1,7 +1,8 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const path = require('path')
+const { readFileSync, existsSync } = require('fs')
 
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
+const isDev = process.env.NODE_ENV === 'development'
 
 let mainWindow
 
@@ -31,88 +32,39 @@ function createWindow() {
     title: 'Vila POS System'
   })
 
-  // Always load from built files for offline operation
-  const indexPath = isDev 
-    ? path.join(__dirname, '../dist/index.html')
-    : path.join(__dirname, '../dist/index.html')
+  // Determine the correct path for the built application
+  let indexPath
+  
+  if (isDev) {
+    // Development mode - load from dist folder
+    indexPath = path.join(__dirname, '../dist/index.html')
+  } else {
+    // Production mode - check multiple possible locations
+    const possiblePaths = [
+      path.join(__dirname, '../dist/index.html'),
+      path.join(__dirname, '../app/dist/index.html'),
+      path.join(process.resourcesPath, 'app/dist/index.html'),
+      path.join(__dirname, '../../dist/index.html')
+    ]
+    
+    indexPath = possiblePaths.find(p => existsSync(p))
+  }
 
-  mainWindow.loadFile(indexPath).catch((error) => {
-    console.error('Failed to load application:', error)
-    
-    // Fallback: create a simple error page
-    const errorHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Vila POS System - Error</title>
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-              background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-              color: white;
-              margin: 0;
-              padding: 0;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-            }
-            .error-container {
-              text-align: center;
-              max-width: 500px;
-              padding: 40px;
-              background: rgba(255, 255, 255, 0.1);
-              border-radius: 20px;
-              backdrop-filter: blur(10px);
-              border: 1px solid rgba(255, 255, 255, 0.2);
-            }
-            .error-icon {
-              font-size: 64px;
-              margin-bottom: 20px;
-            }
-            .error-title {
-              font-size: 24px;
-              font-weight: bold;
-              margin-bottom: 16px;
-              color: #ef4444;
-            }
-            .error-message {
-              font-size: 16px;
-              margin-bottom: 24px;
-              opacity: 0.8;
-              line-height: 1.5;
-            }
-            .error-instructions {
-              font-size: 14px;
-              opacity: 0.7;
-              background: rgba(0, 0, 0, 0.2);
-              padding: 16px;
-              border-radius: 8px;
-              border-left: 4px solid #3b82f6;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="error-container">
-            <div class="error-icon">⚠️</div>
-            <h1 class="error-title">Application Not Built</h1>
-            <p class="error-message">
-              The Vila POS System needs to be built before it can run offline.
-            </p>
-            <div class="error-instructions">
-              <strong>To fix this issue:</strong><br>
-              1. Open terminal/command prompt<br>
-              2. Navigate to the project folder<br>
-              3. Run: <code>npm run build</code><br>
-              4. Then run: <code>npm run app</code>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
-    
-    mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`)
-  })
+  console.log('Attempting to load from:', indexPath)
+  console.log('File exists:', indexPath ? existsSync(indexPath) : false)
+  console.log('Current directory:', __dirname)
+  console.log('Process cwd:', process.cwd())
+  console.log('App path:', app.getAppPath())
+
+  if (indexPath && existsSync(indexPath)) {
+    mainWindow.loadFile(indexPath).catch((error) => {
+      console.error('Failed to load application:', error)
+      loadErrorPage()
+    })
+  } else {
+    console.error('Could not find index.html file')
+    loadErrorPage()
+  }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
@@ -131,6 +83,119 @@ function createWindow() {
 
   // Set up menu
   createMenu()
+}
+
+function loadErrorPage() {
+  const errorHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Vila POS System - Error</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+          }
+          .error-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+          }
+          .error-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+          }
+          .error-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #ef4444;
+          }
+          .error-message {
+            font-size: 16px;
+            margin-bottom: 24px;
+            opacity: 0.8;
+            line-height: 1.5;
+          }
+          .error-instructions {
+            font-size: 14px;
+            opacity: 0.7;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            text-align: left;
+            margin-bottom: 20px;
+          }
+          .error-details {
+            font-size: 12px;
+            opacity: 0.6;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            text-align: left;
+            margin-top: 20px;
+          }
+          .retry-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+          }
+          .retry-button:hover {
+            background: #2563eb;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="error-container">
+          <div class="error-icon">⚠️</div>
+          <h1 class="error-title">Application Failed to Load</h1>
+          <p class="error-message">
+            The Vila POS System could not load the main application files.
+          </p>
+          <div class="error-instructions">
+            <strong>To fix this issue:</strong><br><br>
+            1. Make sure you have built the application:<br>
+            &nbsp;&nbsp;&nbsp;<code>npm run build</code><br><br>
+            2. Then rebuild the Windows executable:<br>
+            &nbsp;&nbsp;&nbsp;<code>npm run build-win</code><br><br>
+            3. Or try the combined command:<br>
+            &nbsp;&nbsp;&nbsp;<code>npm run build && npm run build-win</code>
+          </div>
+          <div class="error-details">
+            <strong>Debug Information:</strong><br>
+            App Path: ${app.getAppPath()}<br>
+            Current Dir: ${__dirname}<br>
+            Process CWD: ${process.cwd()}<br>
+            Is Dev: ${isDev}<br>
+            Platform: ${process.platform}<br>
+            Node Version: ${process.version}
+          </div>
+          <button class="retry-button" onclick="location.reload()">Retry Loading</button>
+          <button class="retry-button" onclick="require('electron').remote.app.quit()">Close Application</button>
+        </div>
+      </body>
+    </html>
+  `
+  
+  mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`)
 }
 
 function createMenu() {
@@ -217,7 +282,7 @@ function createMenu() {
               type: 'info',
               title: 'System Information',
               message: 'Moon Light Villa POS System Information',
-              detail: `Platform: ${os.platform()}\nArchitecture: ${os.arch()}\nNode Version: ${process.versions.node}\nElectron Version: ${process.versions.electron}\nChrome Version: ${process.versions.chrome}`,
+              detail: `Platform: ${os.platform()}\nArchitecture: ${os.arch()}\nNode Version: ${process.versions.node}\nElectron Version: ${process.versions.electron}\nChrome Version: ${process.versions.chrome}\nApp Path: ${app.getAppPath()}`,
               buttons: ['OK']
             })
           }
