@@ -418,7 +418,7 @@ const LoginPage = () => {
               transition={{ delay: 0.4, duration: 0.6 }}
               className={`text-4xl font-bold bg-gradient-to-r ${currentTheme.accent} bg-clip-text text-transparent mb-2`}
             >
-              Vila POS System
+              Moon Light Villa
             </motion.h1>
             
             <motion.p
@@ -715,29 +715,36 @@ const LoginPage = () => {
                 whileTap={{ scale: isBlocked ? 1 : 0.98 }}
                 animate={!isBlocked && !isLoading ? {
                   boxShadow: [
-                    "0 10px 30px rgba(255, 255, 255, 0.2)",
-                    "0 15px 40px rgba(255, 255, 255, 0.3)",
-                    "0 10px 30px rgba(255, 255, 255, 0.2)"
+                    "0 15px 35px rgba(59, 130, 246, 0.4)",
+                    "0 20px 45px rgba(147, 51, 234, 0.5)",
+                    "0 15px 35px rgba(59, 130, 246, 0.4)"
+                  ],
+                  background: [
+                    "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+                    "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+                    "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)"
                   ]
                 } : {}}
                 transition={{ 
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                  boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                  background: { duration: 3, repeat: Infinity, ease: "easeInOut" }
                 }}
                 type="submit"
                 disabled={isLoading || isBlocked || !isValid}
                 className={`
-                  w-full py-5 px-8 rounded-2xl font-bold text-white text-lg
+                  w-full py-6 px-8 rounded-2xl font-bold text-white text-lg
                   transition-all duration-300 ease-out
                   flex items-center justify-center gap-3
                   disabled:opacity-50 disabled:cursor-not-allowed
-                  shadow-2xl relative overflow-hidden
+                  shadow-2xl relative overflow-hidden group
                   ${isBlocked 
                     ? 'bg-gray-600/50' 
-                    : `bg-gradient-to-r ${currentTheme.accent} hover:shadow-3xl transform hover:-translate-y-1`
+                    : `bg-gradient-to-r ${currentTheme.accent} hover:shadow-3xl transform hover:-translate-y-2 hover:scale-105`
                   }
                 `}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:translate-x-full"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-white/20 opacity-0 group-hover:opacity-100 transition-all duration-700 transform -translate-x-full group-hover:translate-x-0"></div>
                 <div className="relative z-10 flex items-center gap-3">
                   {isLoading ? (
                     <>
@@ -758,17 +765,35 @@ const LoginPage = () => {
                     </>
                   ) : (
                     <>
-                      <LogIn className="w-6 h-6" />
+                      <motion.div
+                        animate={{ x: [0, 3, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <LogIn className="w-6 h-6" />
+                      </motion.div>
                       <span>Sign In</span>
                       <motion.div
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 1, repeat: Infinity }}
+                        animate={{ x: [0, 8, 0], scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
                         <ArrowRight className="w-5 h-5" />
                       </motion.div>
                     </>
                   )}
                 </div>
+                
+                {/* Ripple effect on hover */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl"
+                  whileHover={{
+                    background: [
+                      "radial-gradient(circle at center, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%)",
+                      "radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)",
+                      "radial-gradient(circle at center, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%)"
+                    ]
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
               </motion.button>
             </motion.div>
           </form>
@@ -857,7 +882,7 @@ const LoginPage = () => {
               >
                 ❤️
               </motion.span>
-              for Vila POS
+              for Moon Light Villa
               <motion.span
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}

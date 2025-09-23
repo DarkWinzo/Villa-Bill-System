@@ -202,7 +202,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Vila POS System',
-              message: 'Vila POS System v1.0.0',
+              message: 'Moon Light Villa POS System v1.0.0',
               detail: 'A comprehensive hotel management and billing system.\n\nBuilt with Electron and React for offline operation.\n\nNo internet connection required.',
               buttons: ['OK']
             })
@@ -216,7 +216,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'System Information',
-              message: 'Vila POS System Information',
+              message: 'Moon Light Villa POS System Information',
               detail: `Platform: ${os.platform()}\nArchitecture: ${os.arch()}\nNode Version: ${process.versions.node}\nElectron Version: ${process.versions.electron}\nChrome Version: ${process.versions.chrome}`,
               buttons: ['OK']
             })

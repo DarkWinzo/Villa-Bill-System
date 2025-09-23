@@ -55,10 +55,15 @@ export const CashierLayout = ({ children }) => {
             {/* Logo */}
             <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-700 flex-shrink-0">
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Hotel className="w-6 h-6 text-white" />
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                >
+                  <Hotel className="w-6 h-6 text-white" />
+                </motion.div>
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-100">Vila POS</h1>
+                <h1 className="text-lg font-bold text-gray-100">Moon Light Villa</h1>
                 <p className="text-xs text-gray-400">Cashier Panel</p>
               </div>
             </div>
@@ -123,10 +128,15 @@ export const CashierLayout = ({ children }) => {
                 <div className="flex items-center justify-between px-6 py-6 border-b border-gray-700">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                      <Hotel className="w-6 h-6 text-white" />
+                      <motion.div
+                        animate={{ rotate: [0, 10, -10, 0] }}
+                        transition={{ duration: 4, repeat: Infinity }}
+                      >
+                        <Hotel className="w-6 h-6 text-white" />
+                      </motion.div>
                     </div>
                     <div>
-                      <h1 className="text-lg font-bold text-gray-100">Vila POS</h1>
+                      <h1 className="text-lg font-bold text-gray-100">Moon Light Villa</h1>
                       <p className="text-xs text-gray-400">Cashier Panel</p>
                     </div>
                   </div>

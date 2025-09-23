@@ -1,8 +1,23 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Receipt, TrendingUp, Clock, Hotel } from 'lucide-react'
+import { useBillStore } from '../../stores/billStore'
+import { useRoomStore } from '../../stores/roomStore'
+import { formatCurrency } from '../../utils/currency'
 
 export const CashierOverview = () => {
+  const navigate = useNavigate()
+  const { bills, stats, fetchBills } = useBillStore()
+  const { rooms, fetchRooms } = useRoomStore()
+
+  useEffect(() => {
+    fetchBills()
+    fetchRooms()
+  }, [fetchBills, fetchRooms])
+
+  const availableRooms = rooms.filter(room => room.is_active)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -28,7 +43,7 @@ export const CashierOverview = () => {
             </div>
             <div className="min-w-0">
               <p className="text-slate-400 text-sm">Today's Bills</p>
-              <p className="text-2xl font-bold text-white">0</p>
+              <p className="text-2xl font-bold text-white">{stats.todayBills}</p>
             </div>
           </div>
         </div>
@@ -40,7 +55,7 @@ export const CashierOverview = () => {
             </div>
             <div className="min-w-0">
               <p className="text-slate-400 text-sm">Today's Revenue</p>
-              <p className="text-2xl font-bold text-white">Rs. 0</p>
+              <p className="text-2xl font-bold text-white">{formatCurrency(stats.todayRevenue)}</p>
             </div>
           </div>
         </div>
@@ -52,7 +67,7 @@ export const CashierOverview = () => {
             </div>
             <div className="min-w-0">
               <p className="text-slate-400 text-sm">Available Rooms</p>
-              <p className="text-2xl font-bold text-white">0</p>
+              <p className="text-2xl font-bold text-white">{availableRooms.length}</p>
             </div>
           </div>
         </div>
@@ -78,7 +93,12 @@ export const CashierOverview = () => {
       <div className="card">
         <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-1 lg:gap-3">
-          <button className="btn-primary text-left p-4 h-auto">
+          <motion.button 
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/cashier/create-bill')}
+            className="btn-primary text-left p-4 h-auto"
+          >
             <div className="flex items-center gap-3">
               <Receipt className="w-6 h-6" />
               <div>
@@ -86,8 +106,13 @@ export const CashierOverview = () => {
                 <p className="text-sm opacity-80">Generate a new customer bill</p>
               </div>
             </div>
-          </button>
-          <button className="btn-secondary text-left p-4 h-auto">
+          </motion.button>
+          <motion.button 
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/cashier/rooms')}
+            className="btn-secondary text-left p-4 h-auto"
+          >
             <div className="flex items-center gap-3">
               <Hotel className="w-6 h-6" />
               <div>
@@ -95,7 +120,7 @@ export const CashierOverview = () => {
                 <p className="text-sm opacity-80">Check room availability</p>
               </div>
             </div>
-          </button>
+          </motion.button>
         </div>
       </div>
     </motion.div>
