@@ -281,9 +281,12 @@ ipcMain.handle('print:bill', (event, billData) => {
     // Create a hidden window for printing
     const printWindow = new BrowserWindow({
       show: false,
+      width: 800,
+      height: 600,
       webPreferences: {
         nodeIntegration: false,
-        contextIsolation: true
+        contextIsolation: true,
+        enableRemoteModule: false
       }
     })
 
@@ -301,6 +304,18 @@ ipcMain.handle('print:bill', (event, billData) => {
             .total { font-size: 18px; font-weight: bold; text-align: right; }
             table { width: 100%; border-collapse: collapse; }
             th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+            
+            .print-container {
+              width: 100%;
+              max-width: 210mm;
+              margin: 0 auto;
+              background: white;
+              padding: 20mm;
+              box-sizing: border-box;
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            }
+            
+            .print-header {
           </style>
         </head>
         <body>
@@ -348,15 +363,30 @@ ipcMain.handle('print:bill', (event, billData) => {
     printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(printHtml)}`)
     
     printWindow.webContents.once('did-finish-load', () => {
-      printWindow.webContents.print({
-        silent: false,
-        printBackground: true,
-        margins: {
-          marginType: 'minimum'
-        }
-      }, (success, failureReason) => {
-        printWindow.close()
-        resolve({ success, failureReason })
+      // Add a small delay to ensure content is fully rendered
+      setTimeout(() => {
+        printWindow.webContents.print({
+          silent: false,
+          printBackground: true,
+          color: true,
+          margins: {
+            marginType: 'minimum'
+          },
+          landscape: false,
+          scaleFactor: 100
+        }, (success, failureReason) => {
+          printWindow.close()
+          resolve({ success, failureReason })
+        })
+      }, 1000)
+    })
+
+    printWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+      console.error('Print window failed to load:', errorCode, errorDescription)
+      printWindow.close()
+      resolve({ 
+        success: false, 
+        failureReason: `Failed to load print content: ${errorDescription}` 
       })
     })
   })
