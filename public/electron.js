@@ -36,34 +36,44 @@ function createWindow() {
   let indexPath
   
   if (isDev) {
-    // Development mode - load from dist folder
-    indexPath = path.join(__dirname, '../dist/index.html')
-  } else {
-    // Production mode - check multiple possible locations
-    const possiblePaths = [
-      path.join(__dirname, '../dist/index.html'),
-      path.join(__dirname, '../app/dist/index.html'),
-      path.join(process.resourcesPath, 'app/dist/index.html'),
-      path.join(__dirname, '../../dist/index.html')
-    ]
-    
-    indexPath = possiblePaths.find(p => existsSync(p))
-  }
-
-  console.log('Attempting to load from:', indexPath)
-  console.log('File exists:', indexPath ? existsSync(indexPath) : false)
-  console.log('Current directory:', __dirname)
-  console.log('Process cwd:', process.cwd())
-  console.log('App path:', app.getAppPath())
-
-  if (indexPath && existsSync(indexPath)) {
-    mainWindow.loadFile(indexPath).catch((error) => {
-      console.error('Failed to load application:', error)
+    // Development mode - load from Vite dev server
+    mainWindow.loadURL('http://localhost:5173').catch((error) => {
+      console.error('Failed to load dev server:', error)
       loadErrorPage()
     })
   } else {
-    console.error('Could not find index.html file')
-    loadErrorPage()
+    // Production mode - load from built files
+    const possiblePaths = [
+      // When running from built app
+      path.join(__dirname, '../dist/index.html'),
+      // When running from resources in packaged app
+      path.join(process.resourcesPath, 'app.asar/dist/index.html'),
+      path.join(process.resourcesPath, 'app/dist/index.html'),
+      // Alternative paths
+      path.join(__dirname, '../../dist/index.html'),
+      path.join(app.getAppPath(), 'dist/index.html')
+    ]
+    
+    console.log('Searching for index.html in the following paths:')
+    possiblePaths.forEach(p => {
+      console.log(`- ${p} (exists: ${existsSync(p)})`)
+    })
+    
+    indexPath = possiblePaths.find(p => existsSync(p))
+    
+    if (indexPath) {
+      console.log('Loading from:', indexPath)
+      mainWindow.loadFile(indexPath).catch((error) => {
+        console.error('Failed to load application:', error)
+        loadErrorPage()
+      })
+    } else {
+      console.error('Could not find index.html file in any of the expected locations')
+      console.log('App path:', app.getAppPath())
+      console.log('Resources path:', process.resourcesPath)
+      console.log('__dirname:', __dirname)
+      loadErrorPage()
+    }
   }
 
   mainWindow.once('ready-to-show', () => {
@@ -182,6 +192,7 @@ function loadErrorPage() {
           <div class="error-details">
             <strong>Debug Information:</strong><br>
             App Path: ${app.getAppPath()}<br>
+            Resources Path: ${process.resourcesPath || 'undefined'}<br>
             Current Dir: ${__dirname}<br>
             Process CWD: ${process.cwd()}<br>
             Is Dev: ${isDev}<br>
@@ -189,7 +200,6 @@ function loadErrorPage() {
             Node Version: ${process.version}
           </div>
           <button class="retry-button" onclick="location.reload()">Retry Loading</button>
-          <button class="retry-button" onclick="require('electron').remote.app.quit()">Close Application</button>
         </div>
       </body>
     </html>
@@ -282,7 +292,7 @@ function createMenu() {
               type: 'info',
               title: 'System Information',
               message: 'Moon Light Villa POS System Information',
-              detail: `Platform: ${os.platform()}\nArchitecture: ${os.arch()}\nNode Version: ${process.versions.node}\nElectron Version: ${process.versions.electron}\nChrome Version: ${process.versions.chrome}\nApp Path: ${app.getAppPath()}`,
+              detail: `Platform: ${os.platform()}\nArchitecture: ${os.arch()}\nNode Version: ${process.versions.node}\nElectron Version: ${process.versions.electron}\nChrome Version: ${process.versions.chrome}\nApp Path: ${app.getAppPath()}\nResources Path: ${process.resourcesPath || 'undefined'}`,
               buttons: ['OK']
             })
           }
