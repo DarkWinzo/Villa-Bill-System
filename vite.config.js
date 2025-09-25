@@ -21,6 +21,17 @@ module.exports = defineConfig({
     target: 'esnext',
     minify: 'esbuild',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['framer-motion', 'lucide-react', 'react-hot-toast'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'yup'],
+          state: ['zustand']
+        }
+      }
+    }
   },
   base: './',
   publicDir: 'public'

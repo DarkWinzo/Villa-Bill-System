@@ -54,24 +54,28 @@ function createWindow() {
       path.join(app.getAppPath(), 'dist/index.html')
     ]
     
-    console.log('Searching for index.html in the following paths:')
-    possiblePaths.forEach(p => {
-      console.log(`- ${p} (exists: ${existsSync(p)})`)
-    })
+    if (isDev) {
+      console.log('Searching for index.html in the following paths:')
+      possiblePaths.forEach(p => {
+        console.log(`- ${p} (exists: ${existsSync(p)})`)
+      })
+    }
     
     indexPath = possiblePaths.find(p => existsSync(p))
     
     if (indexPath) {
-      console.log('Loading from:', indexPath)
+      if (isDev) console.log('Loading from:', indexPath)
       mainWindow.loadFile(indexPath).catch((error) => {
         console.error('Failed to load application:', error)
         loadErrorPage()
       })
     } else {
       console.error('Could not find index.html file in any of the expected locations')
-      console.log('App path:', app.getAppPath())
-      console.log('Resources path:', process.resourcesPath)
-      console.log('__dirname:', __dirname)
+      if (isDev) {
+        console.log('App path:', app.getAppPath())
+        console.log('Resources path:', process.resourcesPath)
+        console.log('__dirname:', __dirname)
+      }
       loadErrorPage()
     }
   }

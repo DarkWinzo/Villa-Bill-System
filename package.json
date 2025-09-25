@@ -8,7 +8,11 @@
     "build": "vite build",
     "build-win": "npm run build && electron-builder --win --publish=never",
     "app": "cross-env NODE_ENV=production electron public/electron.js",
-    "build-and-run": "npm run build && npm run app"
+    "build-and-run": "npm run build && npm run app",
+    "clean": "rimraf dist dist-electron",
+    "rebuild": "npm run clean && npm run build",
+    "package": "npm run build && electron-builder --win --publish=never",
+    "start": "npm run build-and-run"
   },
   "keywords": [
     "pos",

@@ -49,11 +49,16 @@ A comprehensive hotel management and billing system built with Electron and Reac
    ```bash
    npm run app
    ```
+   
+   Or use the combined command:
+   ```bash
+   npm run start
+   ```
 
 #### Create Windows Installer
 To create a Windows installer:
 ```bash
-npm run build-win
+npm run package
 ```
 
 The installer will be created in the `dist-electron` folder.
