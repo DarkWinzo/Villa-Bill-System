@@ -201,6 +201,7 @@ export const AdminLayout = ({ children }) => {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 md:pl-64">
+        <ElectronHeader />
         {/* Top bar */}
         <header className="bg-gray-800 border-b border-gray-700 px-4 sm:px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">

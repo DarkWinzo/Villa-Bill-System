@@ -20,6 +20,50 @@
   ],
   "author": "Vila POS Team",
   "license": "MIT",
+  "build": {
+    "appId": "com.vilapos.desktop",
+    "productName": "Moon Light Villa POS",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ],
+      "icon": "electron/assets/icon.png",
+      "publisherName": "Vila POS Team",
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Moon Light Villa POS"
+    },
+    "portable": {
+      "artifactName": "MoonLightVillaPOS-Portable-${version}.${ext}"
+    },
+    "extraResources": [
+      {
+        "from": "electron/assets",
+        "to": "assets"
+      }
+    ]
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
     "clsx": "^2.0.0",

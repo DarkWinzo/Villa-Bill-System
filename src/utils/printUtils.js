@@ -362,8 +362,44 @@ export const generateBillHTML = (bill) => {
 }
 
 export const printBill = (bill) => {
-  // Use browser printing for web application
-  return printBillInBrowser(bill)
+  if (isElectron()) {
+    return printBillInElectron(bill)
+  } else {
+    // Use browser printing for web application
+    return printBillInBrowser(bill)
+  }
+}
+
+export const printBillInElectron = (bill) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const printWindow = window.open('', '_blank', 'width=800,height=600')
+      
+      if (!printWindow) {
+        reject(new Error('Please allow popups to print bills'))
+        return
+      }
+
+      const htmlContent = generateBillHTML(bill)
+      printWindow.document.write(htmlContent)
+      printWindow.document.close()
+      
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printDocument()
+          printWindow.close()
+          resolve({ success: true })
+        }, 500)
+      }
+      
+      printWindow.onerror = (error) => {
+        printWindow.close()
+        reject(new Error('Failed to print bill: ' + error))
+      }
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 
 export const printBillInBrowser = (bill) => {

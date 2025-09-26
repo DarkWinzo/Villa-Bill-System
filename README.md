@@ -1,10 +1,11 @@
 # Vila POS System - Web Application
 
-A comprehensive hotel management and billing system built with React and Vite, designed as a modern web application.
+A comprehensive hotel management and billing system built with React, Vite, and Electron, available as both a web application and Windows desktop application.
 
 ## Features
 
-- **Modern Web Application** - Runs in any modern web browser
+- **Cross-Platform** - Available as web application and Windows desktop app
+- **Offline Capable** - Desktop version works completely offline
 - **User Management** - Admin and Cashier roles with secure authentication
 - **Room Management** - Add, edit, and manage hotel rooms
 - **Billing System** - Create and manage customer bills
@@ -16,11 +17,17 @@ A comprehensive hotel management and billing system built with React and Vite, d
 
 ## System Requirements
 
+### Web Application
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - JavaScript enabled
 - Local storage support
 - No internet connection required after initial load
 
+### Windows Desktop Application
+- Windows 10 or later (64-bit or 32-bit)
+- 4GB RAM minimum (8GB recommended)
+- 500MB free disk space
+- No internet connection required
 ## Installation & Development
 
 ### Prerequisites
@@ -223,6 +230,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Version History
 
+### v2.1.0 (Desktop Application)
+- Added Windows desktop application support
+- Enhanced offline functionality
+- Improved printing capabilities
+- Native file system integration
+- Auto-update support (coming soon)
 ### v2.0.0 (Web Application)
 - Converted from Electron to web application
 - Improved browser compatibility
