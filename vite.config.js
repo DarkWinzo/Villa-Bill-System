@@ -13,11 +13,12 @@ module.exports = defineConfig({
     port: 5173,
     host: 'localhost',
     strictPort: true,
-    cors: true
+    cors: true,
+    open: true
   },
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    sourcemap: true,
     target: 'esnext',
     minify: 'esbuild',
     emptyOutDir: true,
@@ -34,5 +35,8 @@ module.exports = defineConfig({
     }
   },
   base: './',
-  publicDir: 'public'
+  publicDir: 'public',
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  }
 })

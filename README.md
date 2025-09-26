@@ -1,67 +1,58 @@
-# Vila POS System - Offline Windows Application
+# Vila POS System - Web Application
 
-A comprehensive hotel management and billing system built with Electron and React, designed to work completely offline on Windows.
+A comprehensive hotel management and billing system built with React and Vite, designed as a modern web application.
 
 ## Features
 
-- **Complete Offline Operation** - No internet connection required
+- **Modern Web Application** - Runs in any modern web browser
 - **User Management** - Admin and Cashier roles with secure authentication
 - **Room Management** - Add, edit, and manage hotel rooms
 - **Billing System** - Create and manage customer bills
-- **Print Support** - Print bills directly from the application
+- **Print Support** - Print bills directly from the browser
 - **Data Persistence** - All data stored locally using browser storage
-- **Responsive Design** - Works on different screen sizes
+- **Responsive Design** - Works on different screen sizes and devices
 - **Modern UI** - Beautiful, intuitive interface with animations
+- **PWA Ready** - Can be installed as a Progressive Web App
 
 ## System Requirements
 
-- Windows 10 or later (64-bit)
-- 4GB RAM minimum (8GB recommended)
-- 500MB free disk space
-- No internet connection required after installation
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- JavaScript enabled
+- Local storage support
+- No internet connection required after initial load
 
-## Installation
+## Installation & Development
 
-### Option 1: Download Pre-built Application
-1. Download the latest release from the releases page
-2. Run the installer (`Vila-POS-System-Setup.exe`)
-3. Follow the installation wizard
-4. Launch the application from the Start Menu or Desktop
-
-### Option 2: Build from Source
-
-#### Prerequisites
+### Prerequisites
 - Node.js 18 or later
 - npm or yarn package manager
 
-#### Build Steps
+### Development Setup
 1. Clone or download the project
 2. Open terminal/command prompt in the project folder
 3. Install dependencies:
    ```bash
    npm install
    ```
-4. Build the application:
+4. Start the development server:
    ```bash
-   npm run build
+   npm run dev
    ```
-5. Run the application:
-   ```bash
-   npm run app
-   ```
-   
-   Or use the combined command:
-   ```bash
-   npm run start
-   ```
+5. Open your browser and navigate to `http://localhost:5173`
 
-#### Create Windows Installer
-To create a Windows installer:
+### Production Build
+To create a production build:
 ```bash
-npm run package
+npm run build
 ```
 
-The installer will be created in the `dist-electron` folder.
+The built files will be in the `dist` folder, ready to be deployed to any web server.
+
+### Preview Production Build
+To preview the production build locally:
+```bash
+npm run preview
+```
 
 ## Usage
 
@@ -77,8 +68,9 @@ The installer will be created in the `dist-electron` folder.
 
 ### Getting Started
 
-1. **Launch the Application**
-   - Double-click the desktop icon or find it in the Start Menu
+1. **Access the Application**
+   - Open your web browser and navigate to the application URL
+   - For development: `http://localhost:5173`
 
 2. **Login**
    - Use the default credentials above
@@ -114,81 +106,115 @@ The installer will be created in the `dist-electron` folder.
 
 ## Data Storage
 
-All application data is stored locally on your computer:
+All application data is stored locally in your browser:
 - User accounts and authentication data
 - Room information and availability
 - Customer bills and transaction history
 - Application settings and preferences
 
-**Data Location:** The application uses browser localStorage, which is stored in the Electron user data directory.
+**Data Location:** The application uses browser localStorage, which persists across browser sessions.
 
-## Backup and Recovery
+## Deployment
 
-### Manual Backup
-1. Close the application
-2. Navigate to the user data folder
-3. Copy the entire folder to a safe location
+### Static Web Hosting
+The application can be deployed to any static web hosting service:
 
-### Restore from Backup
-1. Close the application
-2. Replace the user data folder with your backup
-3. Restart the application
+1. **Build the application:**
+   ```bash
+   npm run build
+   ```
+
+2. **Deploy the `dist` folder to your hosting service:**
+   - Netlify
+   - Vercel
+   - GitHub Pages
+   - AWS S3
+   - Any web server
+
+### Web Server Configuration
+For single-page applications, configure your web server to serve `index.html` for all routes:
+
+**Nginx:**
+```nginx
+location / {
+  try_files $uri $uri/ /index.html;
+}
+```
+
+**Apache (.htaccess):**
+```apache
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+```
+
+## Browser Compatibility
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
 ## Troubleshooting
 
-### Application Won't Start
-- Ensure you have built the application: `npm run build`
-- Check that all dependencies are installed: `npm install`
-- Try running: `npm run build-and-run`
+### Application Won't Load
+- Ensure JavaScript is enabled in your browser
+- Check browser console for errors
+- Try clearing browser cache and localStorage
 
 ### Data Not Saving
-- Ensure the application has write permissions
-- Check available disk space
-- Restart the application
+- Ensure localStorage is enabled in your browser
+- Check available storage space
+- Try using an incognito/private window to test
 
 ### Print Issues
-- Ensure you have a printer installed and configured
-- Check printer drivers are up to date
-- Try printing from another application to verify printer works
+- Ensure your browser allows printing
+- Check printer settings and drivers
+- Try printing from another website to verify printer works
 
 ## Development
 
 ### Project Structure
 ```
 vila-pos-system/
-├── public/           # Electron main process files
 ├── src/             # React application source
-├── dist/            # Built web application
-├── dist-electron/   # Built Electron application
-├── build/           # Build resources (icons, etc.)
+├── public/          # Static assets
+├── dist/            # Built application (after build)
+├── index.html       # Main HTML file
 └── package.json     # Project configuration
 ```
 
 ### Available Scripts
 - `npm run dev` - Start development server
-- `npm run build` - Build the React application
-- `npm run app` - Run the Electron application
-- `npm run build-win` - Build Windows installer
-- `npm run clean-cache` - Clean build cache
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run clean` - Clean build artifacts
 
 ### Adding Features
 1. Modify React components in the `src/` folder
-2. Update Electron main process in `public/electron.js`
-3. Rebuild the application: `npm run build`
-4. Test with: `npm run app`
+2. Test with: `npm run dev`
+3. Build for production: `npm run build`
 
 ## Security
 
-- All authentication is handled locally
+- All authentication is handled locally in the browser
 - No data is transmitted over the internet
-- User passwords are stored securely
-- Application runs in a sandboxed environment
+- User passwords are stored securely in localStorage
+- Application runs entirely client-side
+
+## Progressive Web App (PWA)
+
+The application is PWA-ready and can be installed on devices:
+- Look for the "Install" button in your browser
+- Add to home screen on mobile devices
+- Works offline after initial load
 
 ## Support
 
 For technical support or feature requests:
 1. Check the troubleshooting section above
-2. Review the application logs
+2. Review browser console for errors
 3. Contact the development team
 
 ## License
@@ -197,10 +223,16 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Version History
 
-### v1.0.0
-- Initial release
+### v2.0.0 (Web Application)
+- Converted from Electron to web application
+- Improved browser compatibility
+- Added PWA support
+- Enhanced responsive design
+- Optimized for web deployment
+
+### v1.0.0 (Electron)
+- Initial Electron desktop application
 - Complete offline functionality
 - User management system
 - Room and billing management
 - Print support
-- Windows installer

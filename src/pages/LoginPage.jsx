@@ -882,7 +882,7 @@ const LoginPage = () => {
               >
                 ❤️
               </motion.span>
-              for Moon Light Villa
+              for Moon Light Villa - Web App
               <motion.span
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}

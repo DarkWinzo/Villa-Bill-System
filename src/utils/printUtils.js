@@ -362,13 +362,8 @@ export const generateBillHTML = (bill) => {
 }
 
 export const printBill = (bill) => {
-  // Check if we're in Electron environment
-  if (window.electronAPI && window.electronAPI.print) {
-    return window.electronAPI.print.bill(bill)
-  } else {
-    // Fallback to browser printing
-    return printBillInBrowser(bill)
-  }
+  // Use browser printing for web application
+  return printBillInBrowser(bill)
 }
 
 export const printBillInBrowser = (bill) => {
